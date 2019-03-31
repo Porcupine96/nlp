@@ -12,7 +12,7 @@ def read_bills(data_path):
         path = os.path.join(data_path, file_name)
         with open(path, 'r') as f:
             content = f.readlines()
-            bills[file_name] = content
+            bills[file_name] = '\n'.join(content)
     return bills
 
 
@@ -33,7 +33,7 @@ bills = read_bills(data_path)
 
 print('{0} files loaded'.format(len(bills)))
 
-es = Elasticsearch(['localhost:9200'], retry_on_timeout=True)
+es = Elasticsearch(['localhost:9200'], timeout=90, retry_on_timeout=True)
 bulk(es, generate_documents(bills))
 
 print('finished')

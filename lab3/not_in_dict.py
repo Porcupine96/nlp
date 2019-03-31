@@ -26,7 +26,7 @@ def valid_corrections(word, frequency_dict, polish_dict, k):
 def corrections(word, frequency_dict, polish_dict):
     v_corrections = valid_corrections(word, frequency_dict, polish_dict, k=1)
 
-    if len(v_corrections) == 0 and len(word) <= 5:
+    if len(v_corrections) == 0 and len(word) <= 7:
         v_corrections = valid_corrections(
             word, frequency_dict, polish_dict, k=2)
 
@@ -35,6 +35,9 @@ def corrections(word, frequency_dict, polish_dict):
 
 results = not_matching(frequency_dict, polish_dict)
 three_occurrences = [(term, freq) for term, freq in results if freq == 3]
+
+# for term, freq in three_occurrences[:30]:
+#     print('{0:25}: {1}'.format(term, freq))
 
 for term, _ in three_occurrences[:30]:
     best_corrections = corrections(term, frequency_dict, polish_dict)[:3]

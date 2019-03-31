@@ -1,7 +1,7 @@
 version: "3.2"
 services:
   elasticsearch:
-    image: elastic-morfologik:0.1
+    image: elastic-morfologik:0.2
     container_name: elasticsearch
     environment:
       - cluster.name=docker-cluster

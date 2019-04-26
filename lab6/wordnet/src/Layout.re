@@ -104,6 +104,6 @@ let make = children => {
         </List>
         <Divider />
       </Drawer>
-      <div className=Styles.page> {ReasonReact.array(children)} </div>
+      <div className=Styles.page> {children |> ReasonReact.array} </div>
     </div>,
 };

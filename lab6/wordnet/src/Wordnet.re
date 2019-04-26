@@ -12,17 +12,9 @@ type lexem = {
 
 let apiUrl = "http://api.slowosiec.clarin-pl.eu/plwordnet-api";
 
-type sense = {
-  id: int,
-  lemma: string,
-  partOfSpeech: string,
-};
+type senseSearchResponse = {senses: list(Domain.sense)};
 
-type synsetId = int;
-
-type senseSearchResponse = {senses: list(sense)};
-
-let senseDecoder: Json.Decode.decoder(sense) =
+let senseDecoder: Json.Decode.decoder(Domain.sense) =
   json =>
     Json.Decode.{
       id: json |> field("id", int),
@@ -40,10 +32,10 @@ let senseDecoder: Json.Decode.decoder(sense) =
         )##word,
     };
 
-let synsetDecoder: Json.Decode.decoder(synsetId) =
+let synsetDecoder: Json.Decode.decoder(Domain.synsetId) =
   json => json |> Json.Decode.field("id", Json.Decode.int);
 
-let searchSenses: string => jsRepromise(list(sense)) = {
+let searchSenses: string => jsRepromise(list(Domain.sense)) = {
   let decode: Json.Decode.decoder(senseSearchResponse) =
     json =>
       Json.Decode.{senses: json |> field("content", list(senseDecoder))};
@@ -58,7 +50,7 @@ let searchSenses: string => jsRepromise(list(sense)) = {
     );
 };
 
-let synsetForSenseId: int => jsRepromise(synsetId) =
+let synsetForSenseId: int => jsRepromise(Domain.synsetId) =
   senseId =>
     Js.Promise.(
       Fetch.fetch(
@@ -69,7 +61,7 @@ let synsetForSenseId: int => jsRepromise(synsetId) =
       |> fromJsPromise
     );
 
-let sensesForSynset: int => jsRepromise(list(sense)) = {
+let sensesForSynset: int => jsRepromise(list(Domain.sense)) = {
   let decode = Json.Decode.list(senseDecoder);
 
   synsetId =>

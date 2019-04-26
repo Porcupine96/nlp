@@ -10,11 +10,17 @@ var Table = 0;
 
 var TableHead = 0;
 
+var TableBody = 0;
+
 var TableRow = 0;
+
+var TableCell = 0;
 
 exports.Typography = Typography;
 exports.Paper = Paper;
 exports.Table = Table;
 exports.TableHead = TableHead;
+exports.TableBody = TableBody;
 exports.TableRow = TableRow;
+exports.TableCell = TableCell;
 /* No side effect */

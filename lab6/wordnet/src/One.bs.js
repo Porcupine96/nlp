@@ -2,15 +2,13 @@
 'use strict';
 
 var Css = require("bs-css/src/Css.js");
+var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
 var Belt_List = require("bs-platform/lib/js/belt_List.js");
 var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Wordnet$Wordnet = require("./Wordnet.bs.js");
-var MaterialUi_Paper = require("@jsiebern/bs-material-ui/src/MaterialUi_Paper.bs.js");
-var MaterialUi_Table = require("@jsiebern/bs-material-ui/src/MaterialUi_Table.bs.js");
-var MaterialUi_TableRow = require("@jsiebern/bs-material-ui/src/MaterialUi_TableRow.bs.js");
-var MaterialUi_TableHead = require("@jsiebern/bs-material-ui/src/MaterialUi_TableHead.bs.js");
+var SynsetColumn$Wordnet = require("./SynsetColumn.bs.js");
 var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
 var TaskDescription$Wordnet = require("./TaskDescription.bs.js");
 
@@ -19,14 +17,20 @@ var boldText = Css.style(/* :: */[
       /* [] */0
     ]);
 
-var table = Css.style(/* :: */[
+var columnContainer = Css.style(/* :: */[
       Css.width(Css.pct(90)),
-      /* [] */0
+      /* :: */[
+        Css.display(/* flex */-1010954439),
+        /* :: */[
+          Css.justifyContent(/* center */98248149),
+          /* [] */0
+        ]
+      ]
     ]);
 
 var Styles = /* module */[
   /* boldText */boldText,
-  /* table */table
+  /* columnContainer */columnContainer
 ];
 
 function loadSynsets(send) {
@@ -65,20 +69,24 @@ function make(param) {
           /* willUnmount */component[/* willUnmount */6],
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
-          /* render */(function (param) {
+          /* render */(function (self) {
+              var columns = Belt_List.toArray(Belt_List.map(self[/* state */1][/* synsets */0], (function (synset) {
+                          return ReasonReact.element(String(synset[/* synsetId */0]), undefined, SynsetColumn$Wordnet.make(synset, /* array */[]));
+                        })));
               return React.createElement("div", undefined, ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(/* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
                                             "Find all meaning of the szkoda ",
                                             " noun ",
                                             "and display all their synonyms."
-                                          ]))])), ReasonReact.element(undefined, undefined, MaterialUi_Paper.make(table, undefined, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_Table.make(table, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_TableHead.make(undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_TableRow.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))]))]))])));
+                                          ]))])), React.createElement("div", {
+                              className: columnContainer
+                            }, columns));
             }),
           /* initialState */(function (param) {
               return initialState;
             }),
           /* retainedProps */component[/* retainedProps */11],
-          /* reducer */(function (action, state) {
-              console.log(action[0]);
-              return /* NoUpdate */0;
+          /* reducer */(function (action, param) {
+              return /* Update */Block.__(0, [/* record */[/* synsets */action[0]]]);
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]
         ];

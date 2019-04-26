@@ -1,5 +1,3 @@
-open MaterialUi;
-
 module Styles = {
   open Css;
 
@@ -21,6 +19,8 @@ let make = children => {
   ...component,
   render: _ =>
     <div className=Styles.root>
-      <Paper className=Styles.paper> {ReasonReact.array(children)} </Paper>
+      <M.Paper className=Styles.paper>
+        {ReasonReact.array(children)}
+      </M.Paper>
     </div>,
 };

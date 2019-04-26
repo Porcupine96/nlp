@@ -7,13 +7,24 @@ module Styles = {
   let boldText = style([fontWeight(`bold)]);
 
   let columnContainer =
-    style([width(pct(90.)), display(`flex), justifyContent(`center)]);
+    style([
+      height(pct(100.)),
+      width(pct(90.)),
+      display(`flex),
+      justifyContent(`center),
+    ]);
+
+  let progressContainer =
+    style([display(`flex), alignItems(`center), height(rem(14.))]);
 };
 
 type action =
   | SynsetsLoaded(list(Domain.synset));
 
-type state = {synsets: list(Domain.synset)};
+type state = {
+  synsets: list(Domain.synset),
+  ready: bool,
+};
 
 let loadSynsets = (send: action => unit) =>
   Wordnet.searchSenses("szkoda")
@@ -36,7 +47,7 @@ let loadSynsets = (send: action => unit) =>
   |> map(synsets => SynsetsLoaded(synsets))
   |> wait(send);
 
-let initialState = {synsets: []};
+let initialState = {synsets: [], ready: false};
 
 let component = ReasonReact.reducerComponent(__MODULE__);
 
@@ -46,7 +57,7 @@ let make = _ => {
   didMount: self => loadSynsets(self.send),
   reducer: (action, _) =>
     switch (action) {
-    | SynsetsLoaded(synsets) => ReasonReact.Update({synsets: synsets})
+    | SynsetsLoaded(synsets) => ReasonReact.Update({ready: true, synsets})
     },
   render: self => {
     let columns =
@@ -65,7 +76,17 @@ let make = _ => {
           {ReasonReact.string("and display all their synonyms.")}
         </M.Typography>
       </TaskDescription>
-      <div className=Styles.columnContainer> columns </div>
+      <div className=Styles.columnContainer>
+        {
+          if (self.state.ready) {
+            columns;
+          } else {
+            <div className=Styles.progressContainer>
+              <M.CircularProgress />
+            </div>;
+          }
+        }
+      </div>
     </div>;
   },
 };

@@ -15,12 +15,4 @@ module ListItem = MaterialUi.ListItem;
 module ListItemIcon = MaterialUi.ListItemIcon;
 module ListItemText = MaterialUi.ListItemText;
 
-/* module Paper = { */
-/*   let component = ReasonReact.statelessComponent(__MODULE__); */
-
-/*   let make = (~classes=[], children) => { */
-/*     ...component, */
-/*     render: _self => */
-/*       <MaterialUi.Paper classes> ...children </MaterialUi.Paper>, */
-/*   }; */
-/* }; */
+module CircularProgress = MaterialUi.CircularProgress;

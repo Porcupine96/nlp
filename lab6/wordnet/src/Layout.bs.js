@@ -13,6 +13,7 @@ var MaterialUi_List = require("@jsiebern/bs-material-ui/src/MaterialUi_List.bs.j
 var MaterialUi_Drawer = require("@jsiebern/bs-material-ui/src/MaterialUi_Drawer.bs.js");
 var MaterialUi_Divider = require("@jsiebern/bs-material-ui/src/MaterialUi_Divider.bs.js");
 var MaterialUi_ListItem = require("@jsiebern/bs-material-ui/src/MaterialUi_ListItem.bs.js");
+var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
 var MaterialUi_ListItemIcon = require("@jsiebern/bs-material-ui/src/MaterialUi_ListItemIcon.bs.js");
 var MaterialUi_ListItemText = require("@jsiebern/bs-material-ui/src/MaterialUi_ListItemText.bs.js");
 var Looks3$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/Looks3.bs.js");
@@ -187,7 +188,7 @@ function make(children) {
                       var message = toMessage(item);
                       return ReasonReact.element(undefined, undefined, Link$Wordnet.make(item, undefined, /* array */[ReasonReact.element(message, undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
                                                 ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[icon])),
-                                                ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, Caml_option.some(message), undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
+                                                ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, Caml_option.some(message), undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))]))
                                               ]))]));
                     }));
               return React.createElement("div", {

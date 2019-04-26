@@ -11,6 +11,7 @@ var Wordnet$Wordnet = require("./Wordnet.bs.js");
 var SynsetColumn$Wordnet = require("./SynsetColumn.bs.js");
 var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
 var TaskDescription$Wordnet = require("./TaskDescription.bs.js");
+var MaterialUi_CircularProgress = require("@jsiebern/bs-material-ui/src/MaterialUi_CircularProgress.bs.js");
 
 var boldText = Css.style(/* :: */[
       Css.fontWeight(/* bold */-1055161979),
@@ -18,11 +19,25 @@ var boldText = Css.style(/* :: */[
     ]);
 
 var columnContainer = Css.style(/* :: */[
-      Css.width(Css.pct(90)),
+      Css.height(Css.pct(100)),
       /* :: */[
-        Css.display(/* flex */-1010954439),
+        Css.width(Css.pct(90)),
         /* :: */[
-          Css.justifyContent(/* center */98248149),
+          Css.display(/* flex */-1010954439),
+          /* :: */[
+            Css.justifyContent(/* center */98248149),
+            /* [] */0
+          ]
+        ]
+      ]
+    ]);
+
+var progressContainer = Css.style(/* :: */[
+      Css.display(/* flex */-1010954439),
+      /* :: */[
+        Css.alignItems(/* center */98248149),
+        /* :: */[
+          Css.height(Css.rem(14)),
           /* [] */0
         ]
       ]
@@ -30,7 +45,8 @@ var columnContainer = Css.style(/* :: */[
 
 var Styles = /* module */[
   /* boldText */boldText,
-  /* columnContainer */columnContainer
+  /* columnContainer */columnContainer,
+  /* progressContainer */progressContainer
 ];
 
 function loadSynsets(send) {
@@ -52,7 +68,10 @@ function loadSynsets(send) {
                           }), Wordnet$Wordnet.searchSenses("szkoda")))));
 }
 
-var initialState = /* record */[/* synsets : [] */0];
+var initialState = /* record */[
+  /* synsets : [] */0,
+  /* ready */false
+];
 
 var component = ReasonReact.reducerComponent("One-Wordnet");
 
@@ -79,14 +98,19 @@ function make(param) {
                                             "and display all their synonyms."
                                           ]))])), React.createElement("div", {
                               className: columnContainer
-                            }, columns));
+                            }, self[/* state */1][/* ready */1] ? columns : React.createElement("div", {
+                                    className: progressContainer
+                                  }, ReasonReact.element(undefined, undefined, MaterialUi_CircularProgress.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[])))));
             }),
           /* initialState */(function (param) {
               return initialState;
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, param) {
-              return /* Update */Block.__(0, [/* record */[/* synsets */action[0]]]);
+              return /* Update */Block.__(0, [/* record */[
+                          /* synsets */action[0],
+                          /* ready */true
+                        ]]);
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]
         ];

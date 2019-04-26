@@ -80,7 +80,9 @@ let make = children => {
           <Link route=item>
             <M.ListItem key=message button=true>
               <M.ListItemIcon> icon </M.ListItemIcon>
-              <M.ListItemText primary={ReasonReact.string(message)} />
+              <M.Typography>
+                <M.ListItemText primary={ReasonReact.string(message)} />
+              </M.Typography>
             </M.ListItem>
           </Link>;
         })

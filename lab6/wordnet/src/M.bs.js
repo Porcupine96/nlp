@@ -28,6 +28,8 @@ var ListItemIcon = 0;
 
 var ListItemText = 0;
 
+var CircularProgress = 0;
+
 exports.Typography = Typography;
 exports.Paper = Paper;
 exports.Divider = Divider;
@@ -41,4 +43,5 @@ exports.List = List;
 exports.ListItem = ListItem;
 exports.ListItemIcon = ListItemIcon;
 exports.ListItemText = ListItemText;
+exports.CircularProgress = CircularProgress;
 /* No side effect */

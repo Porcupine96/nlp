@@ -2,10 +2,15 @@
 'use strict';
 
 var Css = require("bs-css/src/Css.js");
+var Block = require("bs-platform/lib/js/block.js");
+var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var One$Wordnet = require("./One.bs.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
+var Two$Wordnet = require("./Two.bs.js");
 var Layout$Wordnet = require("./Layout.bs.js");
+var Router$Wordnet = require("./Router.bs.js");
+var ReasonReactRouter = require("reason-react/src/ReasonReactRouter.js");
 
 var container = Css.style(/* :: */[
       Css.height(Css.pct(100)),
@@ -14,7 +19,17 @@ var container = Css.style(/* :: */[
 
 var Styles = /* module */[/* container */container];
 
-var component = ReasonReact.statelessComponent("Application-Wordnet");
+var initialState = /* record */[/* route : One */0];
+
+var component = ReasonReact.reducerComponent("Application-Wordnet");
+
+function routeToComponent(route) {
+  if (route !== 1) {
+    return ReasonReact.element(undefined, undefined, One$Wordnet.make(/* array */[]));
+  } else {
+    return ReasonReact.element(undefined, undefined, Two$Wordnet.make(/* array */[]));
+  }
+}
 
 function make(param) {
   return /* record */[
@@ -22,24 +37,37 @@ function make(param) {
           /* reactClassInternal */component[/* reactClassInternal */1],
           /* handedOffState */component[/* handedOffState */2],
           /* willReceiveProps */component[/* willReceiveProps */3],
-          /* didMount */component[/* didMount */4],
+          /* didMount */(function (self) {
+              var watcherId = ReasonReactRouter.watchUrl((function (url) {
+                      return Curry._1(self[/* send */3], /* UpdateRoute */[Router$Wordnet.mapUrlToRoute(url)]);
+                    }));
+              return Curry._1(self[/* onUnmount */4], (function (param) {
+                            return ReasonReactRouter.unwatchUrl(watcherId);
+                          }));
+            }),
           /* didUpdate */component[/* didUpdate */5],
           /* willUnmount */component[/* willUnmount */6],
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
-          /* render */(function (param) {
+          /* render */(function (self) {
               return React.createElement("div", {
                           className: container
-                        }, ReasonReact.element(undefined, undefined, Layout$Wordnet.make(/* array */[ReasonReact.element(undefined, undefined, One$Wordnet.make(/* array */[]))])));
+                        }, ReasonReact.element(undefined, undefined, Layout$Wordnet.make(/* array */[routeToComponent(self[/* state */1][/* route */0])])));
             }),
-          /* initialState */component[/* initialState */10],
+          /* initialState */(function (param) {
+              return initialState;
+            }),
           /* retainedProps */component[/* retainedProps */11],
-          /* reducer */component[/* reducer */12],
+          /* reducer */(function (action, param) {
+              return /* Update */Block.__(0, [/* record */[/* route */action[0]]]);
+            }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]
         ];
 }
 
 exports.Styles = Styles;
+exports.initialState = initialState;
 exports.component = component;
+exports.routeToComponent = routeToComponent;
 exports.make = make;
 /* container Not a pure module */

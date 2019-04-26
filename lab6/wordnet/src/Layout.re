@@ -1,4 +1,5 @@
-open MaterialUi;
+open Belt;
+open Router;
 
 module Styles = {
   open Css;
@@ -25,6 +26,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       marginTop(px(18)),
+      marginBottom(px(8)),
     ]);
 
   let headerIcon = style([fontSize(px(32))]);
@@ -36,74 +38,66 @@ let graphicUrl = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thu
 
 let component = ReasonReact.statelessComponent(__MODULE__);
 
+let menuItems: array(Router.route) = [|One, Two, Three, Four, Five, Six|];
+
+let toMessage = item =>
+  switch (item) {
+  | One => "\"szkoda\" synonyms"
+  | Two => "\"wypadek drogowy\" hypernyms"
+  | Three => "\"wypadek drogowy\" closures"
+  | Four => "\"wypadek\" direct hyponyms"
+  | Five => "\"wypadek\" 2nd order hyponyms"
+  | Six => "Leacock-Chodorow similarity"
+  };
+
+let toIcon = item =>
+  switch (item) {
+  | One => <MscharleyBsMaterialUiIcons.LooksOne.Outlined />
+  | Two => <MscharleyBsMaterialUiIcons.LooksTwo.Outlined />
+  | Three => <MscharleyBsMaterialUiIcons.Looks3.Outlined />
+  | Four => <MscharleyBsMaterialUiIcons.Looks4.Outlined />
+  | Five => <MscharleyBsMaterialUiIcons.Looks5.Outlined />
+  | Six => <MscharleyBsMaterialUiIcons.Looks6.Outlined />
+  };
+
 let make = children => {
   ...component,
-  render: _ =>
+  render: _ => {
+    let header =
+      <div className=Styles.drawerHeader>
+        <img src=graphicUrl className=Styles.graphic />
+        <p className=Styles.title>
+          {ReasonReact.string("NLP - assignment 6")}
+        </p>
+      </div>;
+
+    let menu =
+      menuItems
+      ->Array.map(item => {
+          let icon = toIcon(item);
+          let message = toMessage(item);
+
+          <Link route=item>
+            <M.ListItem key=message button=true>
+              <M.ListItemIcon> icon </M.ListItemIcon>
+              <M.ListItemText primary={ReasonReact.string(message)} />
+            </M.ListItem>
+          </Link>;
+        })
+      ->ReasonReact.array;
+
     <div className=Styles.layout>
-      <Drawer
+      <M.Drawer
         variant=`Permanent
         open_=true
         className=Styles.drawer
         classes=[Paper(Styles.drawerPaper)]>
-        <div className=Styles.drawerHeader>
-          <img src=graphicUrl className=Styles.graphic />
-          <p className=Styles.title>
-            {ReasonReact.string("NLP - assignment 6")}
-          </p>
-        </div>
-        <Divider />
-        <List>
-          <ListItem key="1" button=true>
-            <ListItemIcon>
-              <MscharleyBsMaterialUiIcons.LooksOne.Outlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={ReasonReact.string("\"szkoda\" synonyms")}
-            />
-          </ListItem>
-          <ListItem key="2" button=true>
-            <ListItemIcon>
-              <MscharleyBsMaterialUiIcons.LooksTwo.Outlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={ReasonReact.string("\"wypadek drogowy\" hypernyms")}
-            />
-          </ListItem>
-          <ListItem key="3" button=true>
-            <ListItemIcon>
-              <MscharleyBsMaterialUiIcons.Looks3.Outlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={ReasonReact.string("\"wypadek drogowy\" closures")}
-            />
-          </ListItem>
-          <ListItem key="4" button=true>
-            <ListItemIcon>
-              <MscharleyBsMaterialUiIcons.Looks4.Outlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={ReasonReact.string("\"wypadek\" direct hyponyms")}
-            />
-          </ListItem>
-          <ListItem key="5" button=true>
-            <ListItemIcon>
-              <MscharleyBsMaterialUiIcons.Looks5.Outlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={ReasonReact.string("\"wypadek\" 2nd order hyponyms")}
-            />
-          </ListItem>
-          <ListItem key="6" button=true>
-            <ListItemIcon>
-              <MscharleyBsMaterialUiIcons.Looks6.Outlined />
-            </ListItemIcon>
-            <ListItemText
-              primary={ReasonReact.string("Leacock-Chodorow similarity")}
-            />
-          </ListItem>
-        </List>
-        <Divider />
-      </Drawer>
+        header
+        <M.Divider />
+        <M.List> menu </M.List>
+        <M.Divider />
+      </M.Drawer>
       <div className=Styles.page> {children |> ReasonReact.array} </div>
-    </div>,
+    </div>;
+  },
 };

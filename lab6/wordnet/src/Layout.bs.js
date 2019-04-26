@@ -5,7 +5,10 @@ var Css = require("bs-css/src/Css.js");
 var Block = require("bs-platform/lib/js/block.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
+var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
+var Link$Wordnet = require("./Link.bs.js");
 var MaterialUi_List = require("@jsiebern/bs-material-ui/src/MaterialUi_List.bs.js");
 var MaterialUi_Drawer = require("@jsiebern/bs-material-ui/src/MaterialUi_Drawer.bs.js");
 var MaterialUi_Divider = require("@jsiebern/bs-material-ui/src/MaterialUi_Divider.bs.js");
@@ -76,7 +79,10 @@ var drawerHeader = Css.style(/* :: */[
                 Css.alignItems(/* center */98248149),
                 /* :: */[
                   Css.marginTop(Css.px(18)),
-                  /* [] */0
+                  /* :: */[
+                    Css.marginBottom(Css.px(8)),
+                    /* [] */0
+                  ]
                 ]
               ]
             ]
@@ -111,6 +117,51 @@ var graphicUrl = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thu
 
 var component = ReasonReact.statelessComponent("Layout-Wordnet");
 
+var menuItems = /* array */[
+  /* One */0,
+  /* Two */1,
+  /* Three */2,
+  /* Four */3,
+  /* Five */4,
+  /* Six */5
+];
+
+function toMessage(item) {
+  switch (item) {
+    case 0 : 
+        return "\"szkoda\" synonyms";
+    case 1 : 
+        return "\"wypadek drogowy\" hypernyms";
+    case 2 : 
+        return "\"wypadek drogowy\" closures";
+    case 3 : 
+        return "\"wypadek\" direct hyponyms";
+    case 4 : 
+        return "\"wypadek\" 2nd order hyponyms";
+    case 5 : 
+        return "Leacock-Chodorow similarity";
+    
+  }
+}
+
+function toIcon(item) {
+  switch (item) {
+    case 0 : 
+        return ReasonReact.element(undefined, undefined, Curry._8(LooksOne$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
+    case 1 : 
+        return ReasonReact.element(undefined, undefined, Curry._8(LooksTwo$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
+    case 2 : 
+        return ReasonReact.element(undefined, undefined, Curry._8(Looks3$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
+    case 3 : 
+        return ReasonReact.element(undefined, undefined, Curry._8(Looks4$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
+    case 4 : 
+        return ReasonReact.element(undefined, undefined, Curry._8(Looks5$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
+    case 5 : 
+        return ReasonReact.element(undefined, undefined, Curry._8(Looks6$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
+    
+  }
+}
+
 function make(children) {
   return /* record */[
           /* debugName */component[/* debugName */0],
@@ -123,47 +174,31 @@ function make(children) {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (param) {
+              var header = React.createElement("div", {
+                    className: drawerHeader
+                  }, React.createElement("img", {
+                        className: graphic,
+                        src: graphicUrl
+                      }), React.createElement("p", {
+                        className: title
+                      }, "NLP - assignment 6"));
+              var menu = Belt_Array.map(menuItems, (function (item) {
+                      var icon = toIcon(item);
+                      var message = toMessage(item);
+                      return ReasonReact.element(undefined, undefined, Link$Wordnet.make(item, undefined, /* array */[ReasonReact.element(message, undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
+                                                ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[icon])),
+                                                ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, Caml_option.some(message), undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
+                                              ]))]));
+                    }));
               return React.createElement("div", {
                           className: layout
                         }, ReasonReact.element(undefined, undefined, MaterialUi_Drawer.make(undefined, undefined, drawer, undefined, undefined, undefined, true, undefined, undefined, undefined, undefined, /* Permanent */950914574, /* :: */[
                                   /* Paper */Block.__(2, [drawerPaper]),
                                   /* [] */0
                                 ], undefined, /* array */[
-                                  React.createElement("div", {
-                                        className: drawerHeader
-                                      }, React.createElement("img", {
-                                            className: graphic,
-                                            src: graphicUrl
-                                          }), React.createElement("p", {
-                                            className: title
-                                          }, "NLP - assignment 6")),
+                                  header,
                                   ReasonReact.element(undefined, undefined, MaterialUi_Divider.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[])),
-                                  ReasonReact.element(undefined, undefined, MaterialUi_List.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                            ReasonReact.element("1", undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, Curry._8(LooksOne$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))])),
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, "\"szkoda\" synonyms", undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
-                                                    ])),
-                                            ReasonReact.element("2", undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, Curry._8(LooksTwo$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))])),
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, "\"wypadek drogowy\" hypernyms", undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
-                                                    ])),
-                                            ReasonReact.element("3", undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, Curry._8(Looks3$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))])),
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, "\"wypadek drogowy\" closures", undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
-                                                    ])),
-                                            ReasonReact.element("4", undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, Curry._8(Looks4$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))])),
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, "\"wypadek\" direct hyponyms", undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
-                                                    ])),
-                                            ReasonReact.element("5", undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, Curry._8(Looks5$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))])),
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, "\"wypadek\" 2nd order hyponyms", undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
-                                                    ])),
-                                            ReasonReact.element("6", undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, Curry._8(Looks6$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))])),
-                                                      ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, "Leacock-Chodorow similarity", undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
-                                                    ]))
-                                          ])),
+                                  ReasonReact.element(undefined, undefined, MaterialUi_List.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[menu])),
                                   ReasonReact.element(undefined, undefined, MaterialUi_Divider.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
                                 ])), React.createElement("div", {
                               className: page
@@ -179,5 +214,8 @@ function make(children) {
 exports.Styles = Styles;
 exports.graphicUrl = graphicUrl;
 exports.component = component;
+exports.menuItems = menuItems;
+exports.toMessage = toMessage;
+exports.toIcon = toIcon;
 exports.make = make;
 /* layout Not a pure module */

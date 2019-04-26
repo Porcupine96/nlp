@@ -6,6 +6,10 @@ var Typography = 0;
 
 var Paper = 0;
 
+var Divider = 0;
+
+var Drawer = 0;
+
 var Table = 0;
 
 var TableHead = 0;
@@ -16,11 +20,25 @@ var TableRow = 0;
 
 var TableCell = 0;
 
+var List = 0;
+
+var ListItem = 0;
+
+var ListItemIcon = 0;
+
+var ListItemText = 0;
+
 exports.Typography = Typography;
 exports.Paper = Paper;
+exports.Divider = Divider;
+exports.Drawer = Drawer;
 exports.Table = Table;
 exports.TableHead = TableHead;
 exports.TableBody = TableBody;
 exports.TableRow = TableRow;
 exports.TableCell = TableCell;
+exports.List = List;
+exports.ListItem = ListItem;
+exports.ListItemIcon = ListItemIcon;
+exports.ListItemText = ListItemText;
 /* No side effect */

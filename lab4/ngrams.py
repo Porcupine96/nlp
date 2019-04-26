@@ -5,7 +5,7 @@ import numpy as np
 import regex
 from nltk.tokenize import word_tokenize
 
-from llr import llr_2x2
+from lab4.llr import llr_2x2
 
 
 def read_stopwords(path):
@@ -34,9 +34,7 @@ def normalize(tokens):
     return normalized_tokens
 
 
-def calculate_counters(bill_content, stop_words):
-    tokens = normalize(word_tokenize(bill_content))
-
+def calculate_counters(tokens, stop_words):
     bigram_counter = Counter()
     left_word_counter = Counter(tokens)
     right_word_counter = Counter(tokens)
@@ -56,7 +54,8 @@ def global_counters(bills, stop_words):
     left_word_counter = Counter()
     right_word_counter = Counter()
     for _, content in list(bills.items()):
-        left, right, bigram = calculate_counters(content, stop_words)
+        tokens = normalize(word_tokenize(content))
+        left, right, bigram = calculate_counters(tokens, stop_words)
         bigram_counter.update(bigram)
         left_word_counter.update(left)
         right_word_counter.update(right)

@@ -1,3 +1,4 @@
+open Belt;
 open MaterialUi;
 
 module Styles = {
@@ -6,10 +7,44 @@ module Styles = {
   let container = style([height(pct(100.))]);
 };
 
-let component = ReasonReact.statelessComponent(__MODULE__);
+type action =
+  | UpdateRoute(Router.route);
+
+type state = {route: Router.route};
+
+let initialState: state = {route: Router.One};
+
+let component = ReasonReact.reducerComponent(__MODULE__);
+
+let routeToComponent = route =>
+  Router.(
+    switch (route) {
+    | One => <One />
+    | Two => <Two />
+    | Three => <One />
+    | Four => <One />
+    | Five => <One />
+    | Six => <One />
+    }
+  );
 
 let make = _ => {
   ...component,
-  render: _ =>
-    <div className=Styles.container> <Layout> <One /> </Layout> </div>,
+  initialState: () => initialState,
+  reducer: (action, _) =>
+    switch (action) {
+    | UpdateRoute(route) => ReasonReact.Update({route: route})
+    },
+  didMount: self => {
+    let watcherId =
+      ReasonReact.Router.watchUrl(url =>
+        url->Router.mapUrlToRoute->UpdateRoute->(self.send)
+      );
+
+    self.onUnmount(() => ReasonReact.Router.unwatchUrl(watcherId));
+  },
+  render: self =>
+    <div className=Styles.container>
+      <Layout> {routeToComponent(self.state.route)} </Layout>
+    </div>,
 };

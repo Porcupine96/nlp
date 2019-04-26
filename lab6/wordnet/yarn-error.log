@@ -1,0 +1,44 @@
+Arguments: 
+  /usr/local/Cellar/node/11.13.0/bin/node /usr/local/Cellar/yarn/1.15.2/libexec/bin/yarn.js add bs-fetch
+
+PATH: 
+  ./bin:/usr/local/bin:/usr/local/sbin:/Users/porcupine/.dotfiles/bin:/Users/porcupine/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Library/TeX/texbin:/usr/local/go/bin:/opt/X11/bin:/Applications/Wireshark.app/Contents/MacOS:./bin:/usr/local/sbin:/Users/porcupine/.dotfiles/bin:/Users/porcupine/.cargo/bin:/Applications/kitty.app/Contents/MacOS:/Users/porcupine/.local/bin:/usr/local/opt/fzf/bin:/Users/porcupine/.local/bin
+
+Yarn version: 
+  1.15.2
+
+Node version: 
+  11.13.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/porcupine/studies/sem8/nlp/lab6/wordnet/package.json: Unexpected token } in JSON at position 245
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.15.2/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.15.2/libexec/lib/cli.js:304:30)
+      at /usr/local/Cellar/yarn/1.15.2/libexec/lib/cli.js:315:13
+
+npm manifest: 
+  {
+    "name": "wordnet",
+    "version": "0.1.0",
+    "scripts": {
+      "buckle:build": "BS_LOG=error bsb -make-world -clean-world",
+      "buckle:up": "BS_LOG=debug bsb -make-world -clean-world -w",
+      "buckle:clean": "BS_LOG=debug bsb -clean-world",
+    },
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+      "bs-platform": "^5.0.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

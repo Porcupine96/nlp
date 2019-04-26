@@ -1,0 +1,13 @@
+* Read the Wordnet API
+* Get acquainted with semantic relations in WordNet.
+* Find all meaning of the szkoda noun and display all their synonyms.
+* Find closure of hypernymy relation for the first meaning of the wypadek drogowy expression. Create diagram of the relations as a directed graph.
+* Find direct hyponyms of wypadek1 noun.
+* Find second-order hyponyms of the same noun.
+* Display as a directed graph (with labels for the edges) semantic relations between the following groups of lexemes:
+** szkoda2, strata1, uszczerbek1, szkoda majątkowa1, uszczerbek na zdrowiu1, krzywda1, niesprawiedliwość1, nieszczęście2.
+** wypadek1, wypadek komunikacyjny1, kolizja2, zderzenie2, kolizja drogowa1, bezkolizyjny2, katastrofa budowlana1, wypadek drogowy1.
+* Find the value of Leacock-Chodorow semantic similarity measure between following pairs of lexemes:
+** szkoda2 - wypadek1,
+** kolizja2 - szkoda majątkowa1,
+** nieszczęście2 - katastrofa budowlana1.

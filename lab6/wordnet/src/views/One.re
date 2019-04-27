@@ -37,11 +37,10 @@ let loadSynsets = (send: action => unit) =>
      )
   |> andThen(synsetIds =>
        Repromise.Rejectable.all(
-         synsetIds
-         ->List.map(synsetId =>
-             Wordnet.sensesForSynset(synsetId)
-             |> map(senses => Domain.{synsetId, senses})
-           ),
+         synsetIds->List.map(synsetId =>
+           Wordnet.sensesForSynset(synsetId)
+           |> map(senses => Domain.{synsetId, senses})
+         ),
        )
      )
   |> map(synsets => SynsetsLoaded(synsets))
@@ -60,6 +59,17 @@ let make = _ => {
     | SynsetsLoaded(synsets) => ReasonReact.Update({ready: true, synsets})
     },
   render: self => {
+    let description =
+      <TaskDescription
+        description={
+          <M.Typography>
+            {ReasonReact.string("Find all meaning of the szkoda ")}
+            <b> {ReasonReact.string(" noun ")} </b>
+            {ReasonReact.string("and display all their synonyms.")}
+          </M.Typography>
+        }
+      />;
+
     let columns =
       self.state.synsets
       ->List.map(synset =>
@@ -69,23 +79,15 @@ let make = _ => {
       ->ReasonReact.array;
 
     <div>
-      <TaskDescription>
-        <M.Typography>
-          {ReasonReact.string("Find all meaning of the szkoda ")}
-          <b> {ReasonReact.string(" noun ")} </b>
-          {ReasonReact.string("and display all their synonyms.")}
-        </M.Typography>
-      </TaskDescription>
+      description
       <div className=Styles.columnContainer>
-        {
-          if (self.state.ready) {
-            columns;
-          } else {
-            <div className=Styles.progressContainer>
-              <M.CircularProgress />
-            </div>;
-          }
-        }
+        {if (self.state.ready) {
+           columns;
+         } else {
+           <div className=Styles.progressContainer>
+             <M.CircularProgress />
+           </div>;
+         }}
       </div>
     </div>;
   },

@@ -5,7 +5,7 @@ module Styles = {
   let link = style([textDecoration(`none)]);
 };
 
-let make = (~route=?, ~className=?, children) => {
+let make = (~route=?, children) => {
   ...component,
   render: _ => {
     let onClick = event => {
@@ -13,8 +13,6 @@ let make = (~route=?, ~className=?, children) => {
       Belt.Option.map(route, Router.navigate) |> ignore;
     };
 
-    <a href="#" onClick className=Styles.link>
-      {children |> ReasonReact.array}
-    </a>;
+    <a href="#" onClick className=Styles.link> {children |> ReasonReact.array} </a>;
   },
 };

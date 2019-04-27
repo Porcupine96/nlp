@@ -11,4 +11,13 @@ type synset = {
   senses: list(sense),
 };
 
-type relation = {id: int};
+type relationKind =
+  | Hypernymy
+  | Other;
+
+type relation = {
+  id: int,
+  relFrom: int,
+  relTo: int,
+  relationKind,
+};

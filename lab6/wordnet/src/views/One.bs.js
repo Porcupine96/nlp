@@ -89,14 +89,15 @@ function make(param) {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
+              var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
+                                "Find all meaning of the szkoda ",
+                                React.createElement("b", undefined, " noun "),
+                                "and display all their synonyms."
+                              ])), /* array */[]));
               var columns = Belt_List.toArray(Belt_List.map(self[/* state */1][/* synsets */0], (function (synset) {
                           return ReasonReact.element(String(synset[/* synsetId */0]), undefined, SynsetColumn$Wordnet.make(synset, /* array */[]));
                         })));
-              return React.createElement("div", undefined, ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(/* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                            "Find all meaning of the szkoda ",
-                                            React.createElement("b", undefined, " noun "),
-                                            "and display all their synonyms."
-                                          ]))])), React.createElement("div", {
+              return React.createElement("div", undefined, description, React.createElement("div", {
                               className: columnContainer
                             }, self[/* state */1][/* ready */1] ? columns : React.createElement("div", {
                                     className: progressContainer

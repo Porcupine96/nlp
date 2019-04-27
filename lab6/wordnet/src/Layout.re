@@ -77,12 +77,13 @@ let make = children => {
           let icon = toIcon(item);
           let message = toMessage(item);
 
-          <Link route=item>
+          let text =
+            <M.Typography> {ReasonReact.string(message)} </M.Typography>;
+
+          <Link key=message route=item>
             <M.ListItem key=message button=true>
               <M.ListItemIcon> icon </M.ListItemIcon>
-              <M.Typography>
-                <M.ListItemText primary={ReasonReact.string(message)} />
-              </M.Typography>
+              <M.ListItemText primary=text />
             </M.ListItem>
           </Link>;
         })

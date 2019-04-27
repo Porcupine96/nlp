@@ -28,6 +28,35 @@ function synsetDecoder(json) {
   return Json_decode.field("id", Json_decode.$$int, json);
 }
 
+function relationIdToKind(relationId) {
+  if (relationId !== 11) {
+    return /* Other */1;
+  } else {
+    return /* Hypernymy */0;
+  }
+}
+
+function relationDecoder(json) {
+  return /* record */[
+          /* id */Json_decode.field("id", Json_decode.$$int, json),
+          /* relFrom */Json_decode.field("synsetFrom", (function (json) {
+                  return {
+                          id: Json_decode.field("id", Json_decode.$$int, json)
+                        };
+                }), json).id,
+          /* relTo */Json_decode.field("synsetTo", (function (json) {
+                  return {
+                          id: Json_decode.field("id", Json_decode.$$int, json)
+                        };
+                }), json).id,
+          /* relationKind */relationIdToKind(Json_decode.field("relation", (function (json) {
+                      return {
+                              id: Json_decode.field("id", Json_decode.$$int, json)
+                            };
+                    }), json).id)
+        ];
+}
+
 function decode(json) {
   return /* record */[/* senses */Json_decode.field("content", (function (param) {
                   return Json_decode.list(senseDecoder, param);
@@ -60,10 +89,21 @@ function sensesForSynset(synsetId) {
                   })));
 }
 
+function relationsForSynset(synsetId) {
+  return Repromise.Rejectable[/* fromJsPromise */10](fetch(apiUrl + ("/synsets/" + (String(synsetId) + "/relations"))).then((function (prim) {
+                      return prim.json();
+                    })).then((function (json) {
+                    return Promise.resolve(Json_decode.list(relationDecoder, json));
+                  })));
+}
+
 exports.apiUrl = apiUrl;
 exports.senseDecoder = senseDecoder;
 exports.synsetDecoder = synsetDecoder;
+exports.relationIdToKind = relationIdToKind;
+exports.relationDecoder = relationDecoder;
 exports.searchSenses = searchSenses;
 exports.synsetForSenseId = synsetForSenseId;
 exports.sensesForSynset = sensesForSynset;
+exports.relationsForSynset = relationsForSynset;
 /*  Not a pure module */

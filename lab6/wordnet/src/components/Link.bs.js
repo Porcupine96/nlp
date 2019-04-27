@@ -16,7 +16,7 @@ var link = Css.style(/* :: */[
 
 var Styles = /* module */[/* link */link];
 
-function make(route, className, children) {
+function make(route, children) {
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],

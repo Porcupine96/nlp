@@ -38,7 +38,7 @@ var Styles = /* module */[
 
 var component = ReasonReact.statelessComponent("TaskDescription-Wordnet");
 
-function make(children) {
+function make(description, param) {
   return /* record */[
           /* debugName */component[/* debugName */0],
           /* reactClassInternal */component[/* reactClassInternal */1],
@@ -52,7 +52,7 @@ function make(children) {
           /* render */(function (param) {
               return React.createElement("div", {
                           className: root
-                        }, ReasonReact.element(undefined, undefined, MaterialUi_Paper.make(paper, undefined, undefined, undefined, undefined, undefined, /* array */[children])));
+                        }, ReasonReact.element(undefined, undefined, MaterialUi_Paper.make(paper, undefined, undefined, undefined, undefined, undefined, /* array */[description])));
             }),
           /* initialState */component[/* initialState */10],
           /* retainedProps */component[/* retainedProps */11],

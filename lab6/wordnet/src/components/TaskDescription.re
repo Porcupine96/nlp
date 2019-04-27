@@ -15,12 +15,10 @@ module Styles = {
 
 let component = ReasonReact.statelessComponent(__MODULE__);
 
-let make = children => {
+let make = (~description, _) => {
   ...component,
   render: _ =>
     <div className=Styles.root>
-      <M.Paper className=Styles.paper>
-        {ReasonReact.array(children)}
-      </M.Paper>
+      <M.Paper className=Styles.paper> description </M.Paper>
     </div>,
 };

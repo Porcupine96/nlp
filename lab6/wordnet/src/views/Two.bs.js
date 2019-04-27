@@ -2,8 +2,17 @@
 'use strict';
 
 var Css = require("bs-css/src/Css.js");
+var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
+var Belt_List = require("bs-platform/lib/js/belt_List.js");
+var Repromise = require("@aantron/repromise/src/js/repromise.js");
+var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
+var Belt_MapInt = require("bs-platform/lib/js/belt_MapInt.js");
+var Belt_SetInt = require("bs-platform/lib/js/belt_SetInt.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
+var Graph$Wordnet = require("../infrastructure/Graph.bs.js");
+var Wordnet$Wordnet = require("../infrastructure/Wordnet.bs.js");
+var Relations$Wordnet = require("../domain/Relations.bs.js");
 var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
 var TaskDescription$Wordnet = require("../components/TaskDescription.bs.js");
 var MaterialUi_CircularProgress = require("@jsiebern/bs-material-ui/src/MaterialUi_CircularProgress.bs.js");
@@ -20,7 +29,7 @@ var progressContainer = Css.style(/* :: */[
     ]);
 
 var graphContainer = Css.style(/* :: */[
-      Css.height(Css.pct(100)),
+      Css.height(Css.rem(30)),
       /* :: */[
         Css.width(Css.pct(90)),
         /* :: */[
@@ -40,11 +49,67 @@ var Styles = /* module */[
 
 var initialState = /* record */[
   /* relations : [] */0,
+  /* synsetMap */Belt_MapInt.empty,
   /* ready */false
 ];
 
+function distinctSynsets(relations) {
+  return Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(Belt_List.flatten(Belt_List.map(relations, (function (relation) {
+                                return /* :: */[
+                                        relation[/* relFrom */1],
+                                        /* :: */[
+                                          relation[/* relTo */2],
+                                          /* [] */0
+                                        ]
+                                      ];
+                              }))))));
+}
+
+function label(synsetId, synsetMap) {
+  var match = Belt_MapInt.get(synsetMap, synsetId);
+  if (match !== undefined) {
+    return Belt_List.reduce(match[/* senses */1], "", (function (acc, sense) {
+                  var match = acc === "";
+                  if (match) {
+                    return sense[/* lemma */1];
+                  } else {
+                    return acc + ("\n" + sense[/* lemma */1]);
+                  }
+                }));
+  } else {
+    return String(synsetId);
+  }
+}
+
 function loadRelations(send) {
-  return /* () */0;
+  return Repromise.Rejectable[/* wait */6](send, Repromise.Rejectable[/* andThen */4]((function (relations) {
+                    return Repromise.Rejectable[/* map */5]((function (synsetMap) {
+                                  return /* RelationsLoaded */[
+                                          relations,
+                                          synsetMap
+                                        ];
+                                }), Repromise.Rejectable[/* map */5]((function (synsets) {
+                                      return Belt_MapInt.fromArray(Belt_List.toArray(synsets));
+                                    }), Repromise.Rejectable[/* all */8](Belt_List.map(distinctSynsets(relations), (function (synsetId) {
+                                              return Repromise.Rejectable[/* map */5]((function (senses) {
+                                                            var synset = /* record */[
+                                                              /* synsetId */synsetId,
+                                                              /* senses */senses
+                                                            ];
+                                                            return /* tuple */[
+                                                                    synsetId,
+                                                                    synset
+                                                                  ];
+                                                          }), Wordnet$Wordnet.sensesForSynset(synsetId));
+                                            })))));
+                  }), Repromise.Rejectable[/* andThen */4]((function (synsetIds) {
+                        var synsetId = Belt_List.headExn(synsetIds);
+                        return Relations$Wordnet.path(synsetId, /* Hypernymy */0, undefined, /* () */0);
+                      }), Repromise.Rejectable[/* andThen */4]((function (senses) {
+                            return Repromise.Rejectable[/* all */8](Belt_List.map(senses, (function (sense) {
+                                              return Wordnet$Wordnet.synsetForSenseId(sense[/* id */0]);
+                                            })));
+                          }), Wordnet$Wordnet.searchSenses("wypadek drogowy")))));
 }
 
 var component = ReasonReact.reducerComponent("Two-Wordnet");
@@ -56,21 +121,34 @@ function make(param) {
           /* handedOffState */component[/* handedOffState */2],
           /* willReceiveProps */component[/* willReceiveProps */3],
           /* didMount */(function (self) {
-              return /* () */0;
+              return loadRelations(self[/* send */3]);
             }),
           /* didUpdate */component[/* didUpdate */5],
           /* willUnmount */component[/* willUnmount */6],
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
-              var graph = React.createElement("div", undefined);
-              return React.createElement("div", undefined, ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(/* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                            "Find closure of",
-                                            React.createElement("b", undefined, " hypernymy "),
-                                            "relation for the first meaning of the wypadek drogowy expression. Create diagram of the relations as a directed graph."
-                                          ]))])), React.createElement("div", {
+              var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
+                                "Find closure of",
+                                React.createElement("b", undefined, " hypernymy "),
+                                "relation for the first meaning of the \"wypadek drogowy\" expression. Create diagram of the relations as a directed graph."
+                              ])), /* array */[]));
+              var nodes = Belt_Array.map(Belt_List.toArray(distinctSynsets(self[/* state */1][/* relations */0])), (function (synsetId) {
+                      return {
+                              id: synsetId,
+                              label: label(synsetId, self[/* state */1][/* synsetMap */1])
+                            };
+                    }));
+              var edges = Belt_List.toArray(Belt_List.map(self[/* state */1][/* relations */0], (function (relation) {
+                          return {
+                                  from: relation[/* relFrom */1],
+                                  to: relation[/* relTo */2]
+                                };
+                        })));
+              var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, /* array */[]));
+              return React.createElement("div", undefined, description, React.createElement("div", {
                               className: graphContainer
-                            }, self[/* state */1][/* ready */1] ? graph : React.createElement("div", {
+                            }, self[/* state */1][/* ready */2] ? graph : React.createElement("div", {
                                     className: progressContainer
                                   }, ReasonReact.element(undefined, undefined, MaterialUi_CircularProgress.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[])))));
             }),
@@ -79,8 +157,11 @@ function make(param) {
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, param) {
-              console.log(action[0]);
-              return /* NoUpdate */0;
+              return /* Update */Block.__(0, [/* record */[
+                          /* relations */action[0],
+                          /* synsetMap */action[1],
+                          /* ready */true
+                        ]]);
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]
         ];
@@ -88,6 +169,8 @@ function make(param) {
 
 exports.Styles = Styles;
 exports.initialState = initialState;
+exports.distinctSynsets = distinctSynsets;
+exports.label = label;
 exports.loadRelations = loadRelations;
 exports.component = component;
 exports.make = make;

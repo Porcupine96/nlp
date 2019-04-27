@@ -19,15 +19,25 @@ var container = Css.style(/* :: */[
 
 var Styles = /* module */[/* container */container];
 
-var initialState = /* record */[/* route : One */0];
+var initialState = /* record */[/* route : Two */1];
 
 var component = ReasonReact.reducerComponent("Application-Wordnet");
 
 function routeToComponent(route) {
-  if (route !== 1) {
-    return ReasonReact.element(undefined, undefined, One$Wordnet.make(/* array */[]));
-  } else {
-    return ReasonReact.element(undefined, undefined, Two$Wordnet.make(/* array */[]));
+  switch (route) {
+    case 0 : 
+        return ReasonReact.element("1", undefined, One$Wordnet.make(/* array */[]));
+    case 1 : 
+        return ReasonReact.element("2", undefined, Two$Wordnet.make(/* array */[]));
+    case 2 : 
+        return ReasonReact.element("3", undefined, One$Wordnet.make(/* array */[]));
+    case 3 : 
+        return ReasonReact.element("4", undefined, One$Wordnet.make(/* array */[]));
+    case 4 : 
+        return ReasonReact.element("5", undefined, One$Wordnet.make(/* array */[]));
+    case 5 : 
+        return ReasonReact.element("6", undefined, One$Wordnet.make(/* array */[]));
+    
   }
 }
 

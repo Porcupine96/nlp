@@ -186,9 +186,10 @@ function make(children) {
               var menu = Belt_Array.map(menuItems, (function (item) {
                       var icon = toIcon(item);
                       var message = toMessage(item);
-                      return ReasonReact.element(undefined, undefined, Link$Wordnet.make(item, undefined, /* array */[ReasonReact.element(message, undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
+                      var text = ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[message]));
+                      return ReasonReact.element(message, undefined, Link$Wordnet.make(item, /* array */[ReasonReact.element(message, undefined, MaterialUi_ListItem.make(undefined, true, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
                                                 ReasonReact.element(undefined, undefined, MaterialUi_ListItemIcon.make(undefined, undefined, undefined, /* array */[icon])),
-                                                ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, Caml_option.some(message), undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))]))
+                                                ReasonReact.element(undefined, undefined, MaterialUi_ListItemText.make(undefined, undefined, undefined, Caml_option.some(text), undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]))
                                               ]))]));
                     }));
               return React.createElement("div", {

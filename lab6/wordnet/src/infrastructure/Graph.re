@@ -1,5 +1,4 @@
-[@bs.module "react-graph-vis"]
-external component: ReasonReact.reactClass = "default";
+[@bs.module "react-graph-vis"] external component: ReasonReact.reactClass = "default";
 
 type node = {
   .
@@ -13,6 +12,22 @@ type edge = {
   "to": int,
 };
 
+type options = {
+  .
+  "nodes": {
+    .
+    "shape": string,
+    "size": int,
+    "shadow": bool,
+  },
+  "edges": {
+    .
+    "width": int,
+    "shadow": bool,
+    "smooth": {. "type": string},
+  },
+};
+
 type props = {
   .
   graph: {
@@ -22,11 +37,12 @@ type props = {
   },
 };
 
-let make = (~nodes: array(node), ~edges: array(edge), children) => {
+let make = (~nodes: array(node), ~edges: array(edge), ~options: options, children) => {
   let props = {
     "graph": {
       "nodes": nodes,
       "edges": edges,
+      "options": options,
     },
   };
 

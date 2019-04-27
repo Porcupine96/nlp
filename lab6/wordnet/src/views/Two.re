@@ -82,7 +82,22 @@ let make = _ => {
 
     let edges: array(Graph.edge) = self.state.relations->List.map(relation => {"from": relation.relFrom, "to": relation.relTo})->List.toArray;
 
-    let graph = <Graph nodes edges />;
+    let options: Graph.options = {
+      "nodes": {
+        "shape": "dot",
+        "size": 10,
+        "shadow": true,
+      },
+      "edges": {
+        "width": 1,
+        "shadow": true,
+        "smooth": {
+          "type": "continuous",
+        },
+      },
+    };
+
+    let graph = <Graph nodes edges options />;
 
     <div>
       description

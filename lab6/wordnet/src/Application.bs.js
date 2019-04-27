@@ -8,6 +8,7 @@ var React = require("react");
 var One$Wordnet = require("./views/One.bs.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Two$Wordnet = require("./views/Two.bs.js");
+var Three$Wordnet = require("./views/Three.bs.js");
 var Layout$Wordnet = require("./Layout.bs.js");
 var Router$Wordnet = require("./Router.bs.js");
 var ReasonReactRouter = require("reason-react/src/ReasonReactRouter.js");
@@ -19,7 +20,7 @@ var container = Css.style(/* :: */[
 
 var Styles = /* module */[/* container */container];
 
-var initialState = /* record */[/* route : Two */1];
+var initialState = /* record */[/* route : Three */2];
 
 var component = ReasonReact.reducerComponent("Application-Wordnet");
 
@@ -30,7 +31,7 @@ function routeToComponent(route) {
     case 1 : 
         return ReasonReact.element("2", undefined, Two$Wordnet.make(/* array */[]));
     case 2 : 
-        return ReasonReact.element("3", undefined, One$Wordnet.make(/* array */[]));
+        return ReasonReact.element("3", undefined, Three$Wordnet.make(/* array */[]));
     case 3 : 
         return ReasonReact.element("4", undefined, One$Wordnet.make(/* array */[]));
     case 4 : 

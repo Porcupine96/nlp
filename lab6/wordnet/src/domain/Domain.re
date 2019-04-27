@@ -4,6 +4,7 @@ type sense = {
   id: int,
   lemma: string,
   partOfSpeech: string,
+  senseNumber: int,
 };
 
 type synset = {
@@ -12,6 +13,7 @@ type synset = {
 };
 
 type relationKind =
+  | Hyponym
   | Hypernymy
   | Other;
 

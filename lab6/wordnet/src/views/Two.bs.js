@@ -104,7 +104,7 @@ function loadRelations(send) {
                                             })))));
                   }), Repromise.Rejectable[/* andThen */4]((function (synsetIds) {
                         var synsetId = Belt_List.headExn(synsetIds);
-                        return Relations$Wordnet.path(synsetId, /* Hypernymy */0, undefined, /* () */0);
+                        return Relations$Wordnet.path(synsetId, /* Hypernymy */1, undefined, /* () */0);
                       }), Repromise.Rejectable[/* andThen */4]((function (senses) {
                             return Repromise.Rejectable[/* all */8](Belt_List.map(senses, (function (sense) {
                                               return Wordnet$Wordnet.synsetForSenseId(sense[/* id */0]);
@@ -145,7 +145,21 @@ function make(param) {
                                   to: relation[/* relTo */2]
                                 };
                         })));
-              var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, /* array */[]));
+              var options = {
+                nodes: {
+                  shape: "dot",
+                  size: 10,
+                  shadow: true
+                },
+                edges: {
+                  width: 1,
+                  shadow: true,
+                  smooth: {
+                    type: "continuous"
+                  }
+                }
+              };
+              var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, options, /* array */[]));
               return React.createElement("div", undefined, description, React.createElement("div", {
                               className: graphContainer
                             }, self[/* state */1][/* ready */2] ? graph : React.createElement("div", {

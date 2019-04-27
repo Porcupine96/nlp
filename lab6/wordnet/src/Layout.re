@@ -4,8 +4,7 @@ open Router;
 module Styles = {
   open Css;
 
-  let layout =
-    style([display(`flex), height(pct(100.)), width(pct(100.))]);
+  let layout = style([display(`flex), height(pct(100.)), width(pct(100.))]);
 
   let graphic = style([width(px(50)), height(px(50))]);
 
@@ -15,7 +14,7 @@ module Styles = {
 
   let drawerPaper = style([width(drawerWidth->px)]);
 
-  let page = style([flexGrow(1.0), padding(32->px), marginTop(64->px)]);
+  let page = style([flexGrow(1.0), padding(32->px), marginTop(8->px)]);
 
   let drawerHeader =
     style([
@@ -25,8 +24,8 @@ module Styles = {
       width(pct(100.)),
       justifyContent(`center),
       alignItems(`center),
-      marginTop(px(18)),
-      marginBottom(px(8)),
+      marginTop(px(32)),
+      marginBottom(px(16)),
     ]);
 
   let headerIcon = style([fontSize(px(32))]);
@@ -44,9 +43,9 @@ let toMessage = item =>
   switch (item) {
   | One => "\"szkoda\" synonyms"
   | Two => "\"wypadek drogowy\" hypernyms"
-  | Three => "\"wypadek drogowy\" closures"
-  | Four => "\"wypadek\" direct hyponyms"
-  | Five => "\"wypadek\" 2nd order hyponyms"
+  | Three => "\"wypadek\" direct hyponyms"
+  | Four => "\"wypadek\" 2nd order hyponyms"
+  | Five => "semantic relations"
   | Six => "Leacock-Chodorow similarity"
   };
 
@@ -66,9 +65,7 @@ let make = children => {
     let header =
       <div className=Styles.drawerHeader>
         <img src=graphicUrl className=Styles.graphic />
-        <p className=Styles.title>
-          {ReasonReact.string("NLP - assignment 6")}
-        </p>
+        <p className=Styles.title> {ReasonReact.string("NLP - assignment 6")} </p>
       </div>;
 
     let menu =
@@ -77,24 +74,16 @@ let make = children => {
           let icon = toIcon(item);
           let message = toMessage(item);
 
-          let text =
-            <M.Typography> {ReasonReact.string(message)} </M.Typography>;
+          let text = <M.Typography> {ReasonReact.string(message)} </M.Typography>;
 
           <Link key=message route=item>
-            <M.ListItem key=message button=true>
-              <M.ListItemIcon> icon </M.ListItemIcon>
-              <M.ListItemText primary=text />
-            </M.ListItem>
+            <M.ListItem key=message button=true> <M.ListItemIcon> icon </M.ListItemIcon> <M.ListItemText primary=text /> </M.ListItem>
           </Link>;
         })
       ->ReasonReact.array;
 
     <div className=Styles.layout>
-      <M.Drawer
-        variant=`Permanent
-        open_=true
-        className=Styles.drawer
-        classes=[Paper(Styles.drawerPaper)]>
+      <M.Drawer variant=`Permanent open_=true className=Styles.drawer classes=[Paper(Styles.drawerPaper)]>
         header
         <M.Divider />
         <M.List> menu </M.List>

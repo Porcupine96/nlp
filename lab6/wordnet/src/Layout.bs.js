@@ -60,7 +60,7 @@ var page = Css.style(/* :: */[
       /* :: */[
         Css.padding(Css.px(32)),
         /* :: */[
-          Css.marginTop(Css.px(64)),
+          Css.marginTop(Css.px(8)),
           /* [] */0
         ]
       ]
@@ -79,9 +79,9 @@ var drawerHeader = Css.style(/* :: */[
               /* :: */[
                 Css.alignItems(/* center */98248149),
                 /* :: */[
-                  Css.marginTop(Css.px(18)),
+                  Css.marginTop(Css.px(32)),
                   /* :: */[
-                    Css.marginBottom(Css.px(8)),
+                    Css.marginBottom(Css.px(16)),
                     /* [] */0
                   ]
                 ]
@@ -134,11 +134,11 @@ function toMessage(item) {
     case 1 : 
         return "\"wypadek drogowy\" hypernyms";
     case 2 : 
-        return "\"wypadek drogowy\" closures";
-    case 3 : 
         return "\"wypadek\" direct hyponyms";
-    case 4 : 
+    case 3 : 
         return "\"wypadek\" 2nd order hyponyms";
+    case 4 : 
+        return "semantic relations";
     case 5 : 
         return "Leacock-Chodorow similarity";
     

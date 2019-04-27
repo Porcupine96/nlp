@@ -27,6 +27,7 @@ let synsetDecoder: Json.Decode.decoder(Domain.synsetId) = json => json |> Json.D
 let relationIdToKind: int => Domain.relationKind =
   relationId =>
     switch (relationId) {
+    | 10 => Domain.Hyponym
     | 11 => Domain.Hypernymy
     | _ => Domain.Other
     };
@@ -47,7 +48,10 @@ let searchSenses: string => jsRepromise(list(Domain.sense)) = {
     Js.Promise.(
       Fetch.fetch(apiUrl ++ "/senses/search?lemma=" ++ word)
       |> then_(Fetch.Response.json)
-      |> then_(json => json |> decode |> resolve)
+      |> then_(json => {
+           Js.log(json);
+           json |> decode |> resolve;
+         })
       |> fromJsPromise
       |> map(res => res.senses)
     );

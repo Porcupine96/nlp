@@ -4,11 +4,12 @@
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var ReactGraphVis = require("react-graph-vis");
 
-function make(nodes, edges, children) {
+function make(nodes, edges, options, children) {
   var props = {
     graph: {
       nodes: nodes,
-      edges: edges
+      edges: edges,
+      options: options
     }
   };
   return ReasonReact.wrapJsForReason(ReactGraphVis.default, props, children);

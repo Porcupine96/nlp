@@ -29,10 +29,14 @@ function synsetDecoder(json) {
 }
 
 function relationIdToKind(relationId) {
-  if (relationId !== 11) {
-    return /* Other */1;
+  if (relationId !== 10) {
+    if (relationId !== 11) {
+      return /* Other */2;
+    } else {
+      return /* Hypernymy */1;
+    }
   } else {
-    return /* Hypernymy */0;
+    return /* Hyponym */0;
   }
 }
 
@@ -69,6 +73,7 @@ function searchSenses(word) {
               }), Repromise.Rejectable[/* fromJsPromise */10](fetch(apiUrl + ("/senses/search?lemma=" + word)).then((function (prim) {
                           return prim.json();
                         })).then((function (json) {
+                        console.log(json);
                         return Promise.resolve(decode(json));
                       }))));
 }

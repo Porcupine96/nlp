@@ -72,7 +72,7 @@ let make = _ => {
       <TaskDescription>
         <M.Typography>
           {ReasonReact.string("Find all meaning of the szkoda ")}
-          {ReasonReact.string(" noun ")}
+          <b> {ReasonReact.string(" noun ")} </b>
           {ReasonReact.string("and display all their synonyms.")}
         </M.Typography>
       </TaskDescription>

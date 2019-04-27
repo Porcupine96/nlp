@@ -10,3 +10,5 @@ type synset = {
   synsetId: int,
   senses: list(sense),
 };
+
+type relation = {id: int};

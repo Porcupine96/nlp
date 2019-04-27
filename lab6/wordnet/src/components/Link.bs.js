@@ -5,7 +5,7 @@ var Css = require("bs-css/src/Css.js");
 var React = require("react");
 var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
-var Router$Wordnet = require("./Router.bs.js");
+var Router$Wordnet = require("../Router.bs.js");
 
 var component = ReasonReact.statelessComponent("Link-Wordnet");
 

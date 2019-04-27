@@ -7,10 +7,10 @@ var React = require("react");
 var Belt_List = require("bs-platform/lib/js/belt_List.js");
 var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
-var Wordnet$Wordnet = require("./Wordnet.bs.js");
-var SynsetColumn$Wordnet = require("./SynsetColumn.bs.js");
+var Wordnet$Wordnet = require("../infrastructure/Wordnet.bs.js");
+var SynsetColumn$Wordnet = require("../components/SynsetColumn.bs.js");
 var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
-var TaskDescription$Wordnet = require("./TaskDescription.bs.js");
+var TaskDescription$Wordnet = require("../components/TaskDescription.bs.js");
 var MaterialUi_CircularProgress = require("@jsiebern/bs-material-ui/src/MaterialUi_CircularProgress.bs.js");
 
 var boldText = Css.style(/* :: */[
@@ -94,7 +94,7 @@ function make(param) {
                         })));
               return React.createElement("div", undefined, ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(/* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
                                             "Find all meaning of the szkoda ",
-                                            " noun ",
+                                            React.createElement("b", undefined, " noun "),
                                             "and display all their synonyms."
                                           ]))])), React.createElement("div", {
                               className: columnContainer

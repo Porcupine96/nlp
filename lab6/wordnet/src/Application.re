@@ -9,7 +9,7 @@ type action =
 
 type state = {route: Router.route};
 
-let initialState: state = {route: Three};
+let initialState: state = {route: Four};
 
 let component = ReasonReact.reducerComponent(__MODULE__);
 
@@ -19,9 +19,8 @@ let routeToComponent = route =>
     | One => <One key="1" />
     | Two => <Two key="2" />
     | Three => <Three key="3" />
-    | Four => <One key="4" />
+    | Four => <Four key="4" />
     | Five => <One key="5" />
-    | Six => <One key="6" />
     }
   );
 

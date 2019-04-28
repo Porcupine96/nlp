@@ -8,9 +8,10 @@ var Belt_List = require("bs-platform/lib/js/belt_List.js");
 var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
 var Belt_MapInt = require("bs-platform/lib/js/belt_MapInt.js");
-var Belt_SetInt = require("bs-platform/lib/js/belt_SetInt.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
+var Util$Wordnet = require("../infrastructure/Util.bs.js");
 var Graph$Wordnet = require("../infrastructure/Graph.bs.js");
+var Domain$Wordnet = require("../domain/Domain.bs.js");
 var Wordnet$Wordnet = require("../infrastructure/Wordnet.bs.js");
 var Relations$Wordnet = require("../domain/Relations.bs.js");
 var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
@@ -53,34 +54,6 @@ var initialState = /* record */[
   /* ready */false
 ];
 
-function distinctSynsets(relations) {
-  return Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(Belt_List.flatten(Belt_List.map(relations, (function (relation) {
-                                return /* :: */[
-                                        relation[/* relFrom */1],
-                                        /* :: */[
-                                          relation[/* relTo */2],
-                                          /* [] */0
-                                        ]
-                                      ];
-                              }))))));
-}
-
-function label(synsetId, synsetMap) {
-  var match = Belt_MapInt.get(synsetMap, synsetId);
-  if (match !== undefined) {
-    return Belt_List.reduce(match[/* senses */1], "", (function (acc, sense) {
-                  var match = acc === "";
-                  if (match) {
-                    return sense[/* lemma */1];
-                  } else {
-                    return acc + ("\n" + sense[/* lemma */1]);
-                  }
-                }));
-  } else {
-    return String(synsetId);
-  }
-}
-
 function loadRelations(send) {
   return Repromise.Rejectable[/* wait */6](send, Repromise.Rejectable[/* andThen */4]((function (relations) {
                     return Repromise.Rejectable[/* map */5]((function (synsetMap) {
@@ -90,7 +63,7 @@ function loadRelations(send) {
                                         ];
                                 }), Repromise.Rejectable[/* map */5]((function (synsets) {
                                       return Belt_MapInt.fromArray(Belt_List.toArray(synsets));
-                                    }), Repromise.Rejectable[/* all */8](Belt_List.map(distinctSynsets(relations), (function (synsetId) {
+                                    }), Repromise.Rejectable[/* all */8](Belt_List.map(Domain$Wordnet.distinctSynsets(relations), (function (synsetId) {
                                               return Repromise.Rejectable[/* map */5]((function (senses) {
                                                             var synset = /* record */[
                                                               /* synsetId */synsetId,
@@ -133,16 +106,17 @@ function make(param) {
                                 React.createElement("b", undefined, " hypernymy "),
                                 "relation for the first meaning of the \"wypadek drogowy\" expression. Create diagram of the relations as a directed graph."
                               ])), /* array */[]));
-              var nodes = Belt_Array.map(Belt_List.toArray(distinctSynsets(self[/* state */1][/* relations */0])), (function (synsetId) {
+              var nodes = Belt_Array.map(Belt_List.toArray(Domain$Wordnet.distinctSynsets(self[/* state */1][/* relations */0])), (function (synsetId) {
                       return {
                               id: synsetId,
-                              label: label(synsetId, self[/* state */1][/* synsetMap */1])
+                              label: Util$Wordnet.label(synsetId, self[/* state */1][/* synsetMap */1])
                             };
                     }));
               var edges = Belt_List.toArray(Belt_List.map(self[/* state */1][/* relations */0], (function (relation) {
                           return {
                                   from: relation[/* relFrom */1],
-                                  to: relation[/* relTo */2]
+                                  to: relation[/* relTo */2],
+                                  label: undefined
                                 };
                         })));
               var options = {
@@ -183,8 +157,6 @@ function make(param) {
 
 exports.Styles = Styles;
 exports.initialState = initialState;
-exports.distinctSynsets = distinctSynsets;
-exports.label = label;
 exports.loadRelations = loadRelations;
 exports.component = component;
 exports.make = make;

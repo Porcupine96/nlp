@@ -3,8 +3,7 @@ type route =
   | Two
   | Three
   | Four
-  | Five
-  | Six;
+  | Five;
 
 let mapUrlToRoute = (url: ReasonReact.Router.url) =>
   switch (url.path) {
@@ -14,7 +13,6 @@ let mapUrlToRoute = (url: ReasonReact.Router.url) =>
   | ["three"] => Three
   | ["four"] => Four
   | ["five"] => Five
-  | ["six"] => Six
   | _ => One
   };
 
@@ -25,7 +23,6 @@ let mapRouteToUrl = route =>
   | Three => "/three"
   | Four => "/four"
   | Five => "/five"
-  | Six => "/six"
   };
 
 let navigate = route => ReasonReact.Router.push(mapRouteToUrl(route));

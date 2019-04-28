@@ -8,6 +8,12 @@ var Paper = 0;
 
 var Divider = 0;
 
+var Input = 0;
+
+var Select = 0;
+
+var MenuItem = 0;
+
 var Drawer = 0;
 
 var Table = 0;
@@ -33,6 +39,9 @@ var CircularProgress = 0;
 exports.Typography = Typography;
 exports.Paper = Paper;
 exports.Divider = Divider;
+exports.Input = Input;
+exports.Select = Select;
+exports.MenuItem = MenuItem;
 exports.Drawer = Drawer;
 exports.Table = Table;
 exports.TableHead = TableHead;

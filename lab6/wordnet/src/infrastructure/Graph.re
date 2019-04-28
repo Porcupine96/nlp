@@ -10,6 +10,7 @@ type edge = {
   .
   "from": int,
   "to": int,
+  "label": option(string),
 };
 
 type options = {

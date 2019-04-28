@@ -37,16 +37,15 @@ let graphicUrl = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thu
 
 let component = ReasonReact.statelessComponent(__MODULE__);
 
-let menuItems: array(Router.route) = [|One, Two, Three, Four, Five, Six|];
+let menuItems: array(Router.route) = [|One, Two, Three, Four, Five|];
 
 let toMessage = item =>
   switch (item) {
   | One => "\"szkoda\" synonyms"
   | Two => "\"wypadek drogowy\" hypernyms"
-  | Three => "\"wypadek\" direct hyponyms"
-  | Four => "\"wypadek\" 2nd order hyponyms"
-  | Five => "semantic relations"
-  | Six => "Leacock-Chodorow similarity"
+  | Three => "\"wypadek\" hyponyms"
+  | Four => "semantic relations"
+  | Five => "Leacock-Chodorow similarity"
   };
 
 let toIcon = item =>
@@ -56,7 +55,6 @@ let toIcon = item =>
   | Three => <MscharleyBsMaterialUiIcons.Looks3.Outlined />
   | Four => <MscharleyBsMaterialUiIcons.Looks4.Outlined />
   | Five => <MscharleyBsMaterialUiIcons.Looks5.Outlined />
-  | Six => <MscharleyBsMaterialUiIcons.Looks6.Outlined />
   };
 
 let make = children => {

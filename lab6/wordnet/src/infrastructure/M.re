@@ -2,6 +2,10 @@ module Typography = MaterialUi.Typography;
 module Paper = MaterialUi.Paper;
 module Divider = MaterialUi.Divider;
 
+module Input = MaterialUi.Input;
+module Select = MaterialUi.Select;
+module MenuItem = MaterialUi.MenuItem;
+
 module Drawer = MaterialUi.Drawer;
 
 module Table = MaterialUi.Table;

@@ -20,9 +20,10 @@ let senseDecoder: Json.Decode.decoder(Domain.sense) =
       id: json |> field("id", int),
       partOfSpeech: (json |> field("partOfSpeech", json => {"lmfType": json |> field("lmfType", string)}))##lmfType,
       lemma: (json |> field("lemma", json => {"word": json |> field("word", string)}))##word,
+      senseNumber: json |> field("senseNumber", int),
     };
 
-let synsetDecoder: Json.Decode.decoder(Domain.synsetId) = json => json |> Json.Decode.field("id", Json.Decode.int);
+let synsetDecoder: Json.Decode.decoder(int) = json => json |> Json.Decode.field("id", Json.Decode.int);
 
 let relationIdToKind: int => Domain.relationKind =
   relationId =>
@@ -38,7 +39,9 @@ let relationDecoder: Json.Decode.decoder(Domain.relation) =
       id: json |> field("id", int),
       relFrom: (json |> field("synsetFrom", json => {"id": json |> field("id", int)}))##id,
       relTo: (json |> field("synsetTo", json => {"id": json |> field("id", int)}))##id,
-      relationKind: relationIdToKind((json |> field("relation", json => {"id": json |> field("id", int)}))##id),
+      relationKind: relationIdToKind(json |> field("relation", json => json |> field("id", int))),
+      relationId: json |> field("relation", json => json |> field("id", int)),
+      relationName: json |> field("relation", json => json |> field("name", string)),
     };
 
 let searchSenses: string => jsRepromise(list(Domain.sense)) = {
@@ -48,16 +51,18 @@ let searchSenses: string => jsRepromise(list(Domain.sense)) = {
     Js.Promise.(
       Fetch.fetch(apiUrl ++ "/senses/search?lemma=" ++ word)
       |> then_(Fetch.Response.json)
-      |> then_(json => {
-           Js.log(json);
-           json |> decode |> resolve;
-         })
+      |> then_(json => json |> decode |> resolve)
+      // |> then_(json => {
+      //      Js.log(word);
+      //      Js.log(json);
+      //      json |> decode |> resolve;
+      //    })
       |> fromJsPromise
       |> map(res => res.senses)
     );
 };
 
-let synsetForSenseId: int => jsRepromise(Domain.synsetId) =
+let synsetForSenseId: int => jsRepromise(int) =
   senseId =>
     Js.Promise.(
       Fetch.fetch(apiUrl ++ "/senses/" ++ string_of_int(senseId) ++ "/synset")
@@ -86,6 +91,10 @@ let relationsForSynset: int => jsRepromise(list(Domain.relation)) = {
       Fetch.fetch(apiUrl ++ "/synsets/" ++ string_of_int(synsetId) ++ "/relations")
       |> then_(Fetch.Response.json)
       |> then_(json => json |> decode |> resolve)
+      // |> then_(json => {
+      //      Js.log(json);
+      //      json |> decode |> resolve;
+      //    })
       |> fromJsPromise
     );
 };

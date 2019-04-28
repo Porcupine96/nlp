@@ -19,7 +19,6 @@ var MaterialUi_ListItemText = require("@jsiebern/bs-material-ui/src/MaterialUi_L
 var Looks3$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/Looks3.bs.js");
 var Looks4$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/Looks4.bs.js");
 var Looks5$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/Looks5.bs.js");
-var Looks6$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/Looks6.bs.js");
 var LooksOne$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/LooksOne.bs.js");
 var LooksTwo$MscharleyBsMaterialUiIcons = require("@mscharley/bs-material-ui-icons/src/icons/LooksTwo.bs.js");
 
@@ -123,8 +122,7 @@ var menuItems = /* array */[
   /* Two */1,
   /* Three */2,
   /* Four */3,
-  /* Five */4,
-  /* Six */5
+  /* Five */4
 ];
 
 function toMessage(item) {
@@ -134,12 +132,10 @@ function toMessage(item) {
     case 1 : 
         return "\"wypadek drogowy\" hypernyms";
     case 2 : 
-        return "\"wypadek\" direct hyponyms";
+        return "\"wypadek\" hyponyms";
     case 3 : 
-        return "\"wypadek\" 2nd order hyponyms";
-    case 4 : 
         return "semantic relations";
-    case 5 : 
+    case 4 : 
         return "Leacock-Chodorow similarity";
     
   }
@@ -157,8 +153,6 @@ function toIcon(item) {
         return ReasonReact.element(undefined, undefined, Curry._8(Looks4$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
     case 4 : 
         return ReasonReact.element(undefined, undefined, Curry._8(Looks5$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
-    case 5 : 
-        return ReasonReact.element(undefined, undefined, Curry._8(Looks6$MscharleyBsMaterialUiIcons.Outlined[/* make */1], undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[]));
     
   }
 }

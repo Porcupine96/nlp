@@ -20,7 +20,8 @@ function senseDecoder(json) {
                   return {
                           lmfType: Json_decode.field("lmfType", Json_decode.string, json)
                         };
-                }), json).lmfType
+                }), json).lmfType,
+          /* senseNumber */Json_decode.field("senseNumber", Json_decode.$$int, json)
         ];
 }
 
@@ -54,10 +55,14 @@ function relationDecoder(json) {
                         };
                 }), json).id,
           /* relationKind */relationIdToKind(Json_decode.field("relation", (function (json) {
-                      return {
-                              id: Json_decode.field("id", Json_decode.$$int, json)
-                            };
-                    }), json).id)
+                      return Json_decode.field("id", Json_decode.$$int, json);
+                    }), json)),
+          /* relationId */Json_decode.field("relation", (function (json) {
+                  return Json_decode.field("id", Json_decode.$$int, json);
+                }), json),
+          /* relationName */Json_decode.field("relation", (function (json) {
+                  return Json_decode.field("name", Json_decode.string, json);
+                }), json)
         ];
 }
 
@@ -73,7 +78,6 @@ function searchSenses(word) {
               }), Repromise.Rejectable[/* fromJsPromise */10](fetch(apiUrl + ("/senses/search?lemma=" + word)).then((function (prim) {
                           return prim.json();
                         })).then((function (json) {
-                        console.log(json);
                         return Promise.resolve(decode(json));
                       }))));
 }

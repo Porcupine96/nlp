@@ -1,4 +1,4 @@
-type synsetId = int;
+open Belt;
 
 type sense = {
   id: int,
@@ -22,4 +22,15 @@ type relation = {
   relFrom: int,
   relTo: int,
   relationKind,
+  relationId: int,
+  relationName: string,
 };
+
+module RelationCmp =
+  Belt.Id.MakeComparable({
+    type t = relation;
+    let cmp = (a, b) => a.id - b.id;
+  });
+
+let distinctSynsets = (relations: list(relation)) =>
+  relations->List.map(relation => [relation.relFrom, relation.relTo])->List.flatten->List.toArray->Belt_SetInt.fromArray->Belt_SetInt.toList;

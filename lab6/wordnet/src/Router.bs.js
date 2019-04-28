@@ -21,12 +21,6 @@ function mapUrlToRoute(url) {
           }
       case "one" : 
           return /* One */0;
-      case "six" : 
-          if (match[1]) {
-            return /* One */0;
-          } else {
-            return /* Six */5;
-          }
       case "three" : 
           if (match[1]) {
             return /* One */0;
@@ -59,8 +53,6 @@ function mapRouteToUrl(route) {
         return "/four";
     case 4 : 
         return "/five";
-    case 5 : 
-        return "/six";
     
   }
 }

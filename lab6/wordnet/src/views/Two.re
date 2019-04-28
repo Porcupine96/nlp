@@ -20,15 +20,6 @@ type state = {
 
 let initialState = {relations: [], synsetMap: Belt_MapInt.empty, ready: false};
 
-let distinctSynsets = (relations: list(Domain.relation)) =>
-  relations->List.map(relation => [relation.relFrom, relation.relTo])->List.flatten->List.toArray->Belt_SetInt.fromArray->Belt_SetInt.toList;
-
-let label = (synsetId: int, synsetMap: Belt_MapInt.t(Domain.synset)): string =>
-  switch (synsetMap->Belt_MapInt.get(synsetId)) {
-  | Some(synset) => synset.senses->List.reduce("", (acc, sense) => acc == "" ? sense.lemma : acc ++ "\n" ++ sense.lemma)
-  | None => string_of_int(synsetId)
-  };
-
 let loadRelations = (send: action => unit) =>
   Wordnet.searchSenses("wypadek drogowy")
   |> andThen(senses => Repromise.Rejectable.all(List.map(senses, (sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))))
@@ -39,7 +30,7 @@ let loadRelations = (send: action => unit) =>
   |> andThen((relations: list(Domain.relation)) =>
        Repromise.Rejectable.all(
          relations
-         ->distinctSynsets
+         ->Domain.distinctSynsets
          ->List.map(synsetId =>
              synsetId->Wordnet.sensesForSynset
              |> map(senses => {
@@ -78,9 +69,13 @@ let make = _ => {
       />;
 
     let nodes: array(Graph.node) =
-      self.state.relations->distinctSynsets->List.toArray->Array.map(synsetId => {"id": synsetId, "label": label(synsetId, self.state.synsetMap)});
+      self.state.relations
+      ->Domain.distinctSynsets
+      ->List.toArray
+      ->Array.map(synsetId => {"id": synsetId, "label": Util.label(synsetId, self.state.synsetMap)});
 
-    let edges: array(Graph.edge) = self.state.relations->List.map(relation => {"from": relation.relFrom, "to": relation.relTo})->List.toArray;
+    let edges: array(Graph.edge) =
+      self.state.relations->List.map(relation => {"from": relation.relFrom, "to": relation.relTo, "label": None})->List.toArray;
 
     let options: Graph.options = {
       "nodes": {

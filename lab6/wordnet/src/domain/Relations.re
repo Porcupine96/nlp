@@ -1,59 +1,38 @@
 open Belt;
 open Repromise.Rejectable;
 
-let rec traverseRelations =
-        (
-          synsetId: int,
-          relationKind: Domain.relationKind,
-          visitedSynsets: list(int),
-          ~maxDepth: option(int)=Some(5),
-          ~target: option(int)=None,
-          (),
-        )
-        : Wordnet.jsRepromise(list(Domain.relation)) =>
-  switch (maxDepth) {
-  | Some(0) => resolved([])
-  | _ =>
-    Wordnet.relationsForSynset(synsetId)
-    |> andThen((relations: list(Domain.relation)) => {
-         let filteredRelations = relations->List.keep(relation => relation.relationKind == relationKind);
-         Js.log(synsetId);
-         Js.log(filteredRelations->List.toArray);
+let network = (synsetId: int, ~maxDepth: option(int)=Some(1), ()): Wordnet.jsRepromise(list(Domain.relation)) => {
+  let visited = ref(Belt_SetInt.empty);
+  let relationIds = ref(Belt_SetInt.empty);
 
-         Repromise.Rejectable.all(
-           filteredRelations->List.map(relation =>
-             switch (relation.relFrom, relation.relTo) {
-             | (relFrom, relTo)
-                 when relFrom == synsetId && !visitedSynsets->List.has(relTo, (==)) && target->Option.map(t => t == relTo) != Some(false) =>
-               Js.log("A");
-               traverseRelations(
-                 relTo,
-                 relationKind,
-                 [relTo, ...visitedSynsets],
-                 ~maxDepth=maxDepth->Option.map(d => d - 1),
-                 ~target=Some(relFrom),
-                 (),
-               )
-               |> map(result => List.concat(filteredRelations, result));
-             | (relFrom, relTo)
-                 when relTo == synsetId && !visitedSynsets->List.has(relFrom, (==)) && target->Option.map(t => t == relFrom) != Some(false) =>
-               Js.log("B");
-               traverseRelations(
-                 relFrom,
-                 relationKind,
-                 [relFrom, ...visitedSynsets],
-                 ~maxDepth=maxDepth->Option.map(d => d - 1),
-                 ~target=Some(relTo),
-                 (),
-               )
-               |> map(result => List.concat(filteredRelations, result));
-             | _ => resolved([])
-             }
-           ),
-         );
-       })
-    |> map(relations => relations->List.flatten)
-  };
+  let rec _network = (synsetId: int, ~maxDepth: option(int)=Some(1), ()) =>
+    switch (maxDepth) {
+    | Some(0) => resolved([])
+    | _ =>
+      Wordnet.relationsForSynset(synsetId)
+      |> andThen((relations: list(Domain.relation)) => {
+           let newRelations = relations->List.keep(relation => !(relationIds^)->Belt_SetInt.has(relation.id));
+           newRelations->List.forEach(relation => relationIds := (relationIds^)->Belt_SetInt.add(relation.id));
+
+           Repromise.Rejectable.all(
+             newRelations->List.map(relation =>
+               switch (relation.relFrom, relation.relTo) {
+               | (relFrom, relTo) when relFrom == synsetId && !(visited^)->Belt_SetInt.has(relTo) =>
+                 visited := (visited^)->Belt_SetInt.add(relTo);
+                 _network(relTo, ~maxDepth=maxDepth->Option.map(d => d - 1), ()) |> map(result => List.concat(newRelations, result));
+               | (relFrom, relTo) when relTo == synsetId && !(visited^)->Belt_SetInt.has(relFrom) =>
+                 visited := (visited^)->Belt_SetInt.add(relFrom);
+                 _network(relFrom, ~maxDepth=maxDepth->Option.map(d => d - 1), ()) |> map(result => List.concat(newRelations, result));
+               | _ => resolved([])
+               }
+             ),
+           );
+         })
+      |> map(relations => relations->List.flatten)
+    };
+
+  _network(synsetId, ~maxDepth, ());
+};
 
 let rec path = (synsetId: int, relationKind: Domain.relationKind, ~maxLength: option(int)=None, ()): Wordnet.jsRepromise(list(Domain.relation)) =>
   switch (maxLength) {

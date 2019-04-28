@@ -4,6 +4,7 @@ type node = {
   .
   "id": int,
   "label": string,
+  "group": option(int),
 };
 
 type edge = {
@@ -24,6 +25,7 @@ type options = {
   "edges": {
     .
     "width": int,
+    "length": int,
     "shadow": bool,
     "smooth": {. "type": string},
   },

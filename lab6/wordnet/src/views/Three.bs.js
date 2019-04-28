@@ -50,7 +50,7 @@ var depthPicker = Css.style(/* :: */[
     ]);
 
 var graphContainer = Css.style(/* :: */[
-      Css.height(Css.rem(30)),
+      Css.height(Css.rem(40)),
       /* :: */[
         Css.width(Css.pct(90)),
         /* :: */[
@@ -168,7 +168,8 @@ function make(param) {
               var nodes = Belt_Array.map(Belt_List.toArray(Domain$Wordnet.distinctSynsets(self[/* state */1][/* relations */0])), (function (synsetId) {
                       return {
                               id: synsetId,
-                              label: Util$Wordnet.label(synsetId, self[/* state */1][/* synsetMap */1])
+                              label: Util$Wordnet.label(synsetId, self[/* state */1][/* synsetMap */1]),
+                              group: undefined
                             };
                     }));
               var edges = Belt_List.toArray(Belt_List.map(self[/* state */1][/* relations */0], (function (relation) {
@@ -186,6 +187,7 @@ function make(param) {
                 },
                 edges: {
                   width: 1,
+                  length: 100,
                   shadow: true,
                   smooth: {
                     type: "continuous"

@@ -6,7 +6,7 @@ module Styles = {
 
   let progressContainer = style([display(`flex), alignItems(`center), height(rem(14.))]);
 
-  let graphContainer = style([height(rem(30.)), width(pct(90.)), display(`flex), justifyContent(`center)]);
+  let graphContainer = style([height(rem(40.)), width(pct(90.)), display(`flex), justifyContent(`center)]);
 };
 
 type action =
@@ -72,7 +72,7 @@ let make = _ => {
       self.state.relations
       ->Domain.distinctSynsets
       ->List.toArray
-      ->Array.map(synsetId => {"id": synsetId, "label": Util.label(synsetId, self.state.synsetMap)});
+      ->Array.map(synsetId => {"id": synsetId, "label": Util.label(synsetId, self.state.synsetMap), "group": None});
 
     let edges: array(Graph.edge) =
       self.state.relations->List.map(relation => {"from": relation.relFrom, "to": relation.relTo, "label": None})->List.toArray;
@@ -85,6 +85,7 @@ let make = _ => {
       },
       "edges": {
         "width": 1,
+        "length": 100,
         "shadow": true,
         "smooth": {
           "type": "continuous",

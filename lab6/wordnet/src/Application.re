@@ -20,7 +20,7 @@ let routeToComponent = route =>
     | Two => <Two key="2" />
     | Three => <Three key="3" />
     | Four => <Four key="4" />
-    | Five => <One key="5" />
+    | Five => <Five key="5" />
     }
   );
 

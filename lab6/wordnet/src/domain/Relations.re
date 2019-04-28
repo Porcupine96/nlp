@@ -52,3 +52,39 @@ let rec path = (synsetId: int, relationKind: Domain.relationKind, ~maxLength: op
        })
     |> map(relations => relations->List.flatten)
   };
+
+let nodesInShortesPath = (a: int, b: int, relations: list(Domain.relation)) => {
+  let visited = ref(Belt_SetInt.empty);
+
+  let rec _search = (currentNode: int, route: list(int)) =>
+    if (currentNode == b) {
+      route;
+    } else {
+      let updatedRoute = route->List.add(currentNode);
+      visited := (visited^)->Belt_SetInt.add(currentNode);
+
+      relations
+      ->List.map(relation =>
+          switch (relation.relFrom, relation.relTo) {
+          | (relFrom, relTo) when relFrom == currentNode && !(visited^)->Belt_SetInt.has(relTo) => _search(relTo, updatedRoute)
+          | (relFrom, relTo) when relTo == currentNode && !(visited^)->Belt_SetInt.has(relFrom) => _search(relFrom, updatedRoute)
+          | _ => []
+          }
+        )
+      ->List.flatten;
+    };
+
+  _search(a, []);
+};
+
+let closure = (synsetIds: list(int), relations: list(Domain.relation)) => {
+  synsetIds
+  ->List.map(a => synsetIds->List.map(b => (a, b))->List.keep(((a, b)) => a != b))
+  ->List.flatten
+  ->List.map(((a, b)) => nodesInShortesPath(a, b, relations))
+  ->List.flatten
+  ->List.keep(synsetId => !synsetIds->List.has(synsetId, (==)))
+  ->List.toArray
+  ->Belt_SetInt.fromArray
+  ->Belt_SetInt.toList;
+};

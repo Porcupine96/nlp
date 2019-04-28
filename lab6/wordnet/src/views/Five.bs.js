@@ -4,10 +4,12 @@
 var Css = require("bs-css/src/Css.js");
 var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
+var Belt_Set = require("bs-platform/lib/js/belt_Set.js");
 var Belt_List = require("bs-platform/lib/js/belt_List.js");
 var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
 var Belt_MapInt = require("bs-platform/lib/js/belt_MapInt.js");
+var Belt_SetInt = require("bs-platform/lib/js/belt_SetInt.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Util$Wordnet = require("../infrastructure/Util.bs.js");
 var Graph$Wordnet = require("../infrastructure/Graph.bs.js");
@@ -18,15 +20,9 @@ var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typ
 var TaskDescription$Wordnet = require("../components/TaskDescription.bs.js");
 var MaterialUi_CircularProgress = require("@jsiebern/bs-material-ui/src/MaterialUi_CircularProgress.bs.js");
 
-var progressContainer = Css.style(/* :: */[
-      Css.display(/* flex */-1010954439),
-      /* :: */[
-        Css.alignItems(/* center */98248149),
-        /* :: */[
-          Css.height(Css.rem(14)),
-          /* [] */0
-        ]
-      ]
+var boldText = Css.style(/* :: */[
+      Css.fontWeight(/* bold */-1055161979),
+      /* [] */0
     ]);
 
 var graphContainer = Css.style(/* :: */[
@@ -43,9 +39,21 @@ var graphContainer = Css.style(/* :: */[
       ]
     ]);
 
+var progressContainer = Css.style(/* :: */[
+      Css.display(/* flex */-1010954439),
+      /* :: */[
+        Css.alignItems(/* center */98248149),
+        /* :: */[
+          Css.height(Css.rem(14)),
+          /* [] */0
+        ]
+      ]
+    ]);
+
 var Styles = /* module */[
-  /* progressContainer */progressContainer,
-  /* graphContainer */graphContainer
+  /* boldText */boldText,
+  /* graphContainer */graphContainer,
+  /* progressContainer */progressContainer
 ];
 
 var initialState = /* record */[
@@ -54,8 +62,23 @@ var initialState = /* record */[
   /* ready */false
 ];
 
+var numberedSenses = /* :: */[
+  /* record */[
+    /* lemma */"szkoda",
+    /* senseNumber */2
+  ],
+  /* :: */[
+    /* record */[
+      /* lemma */"wypadek",
+      /* senseNumber */1
+    ],
+    /* [] */0
+  ]
+];
+
 function loadRelations(send) {
-  return Repromise.Rejectable[/* wait */6](send, Repromise.Rejectable[/* andThen */4]((function (relations) {
+  return Repromise.Rejectable[/* wait */6](send, Repromise.Rejectable[/* andThen */4]((function (param) {
+                    var relations = param[1];
                     return Repromise.Rejectable[/* map */5]((function (synsetMap) {
                                   return /* RelationsLoaded */[
                                           relations,
@@ -63,7 +86,7 @@ function loadRelations(send) {
                                         ];
                                 }), Repromise.Rejectable[/* map */5]((function (synsets) {
                                       return Belt_MapInt.fromArray(Belt_List.toArray(synsets));
-                                    }), Repromise.Rejectable[/* all */8](Belt_List.map(Domain$Wordnet.distinctSynsets(relations), (function (synsetId) {
+                                    }), Repromise.Rejectable[/* all */8](Belt_List.map(param[0], (function (synsetId) {
                                               return Repromise.Rejectable[/* map */5]((function (senses) {
                                                             var synset = /* record */[
                                                               /* synsetId */synsetId,
@@ -75,17 +98,36 @@ function loadRelations(send) {
                                                                   ];
                                                           }), Wordnet$Wordnet.sensesForSynset(synsetId));
                                             })))));
-                  }), Repromise.Rejectable[/* andThen */4]((function (synsetIds) {
-                        var synsetId = Belt_List.headExn(synsetIds);
-                        return Relations$Wordnet.path(synsetId, /* Hypernymy */1, undefined, /* () */0);
-                      }), Repromise.Rejectable[/* andThen */4]((function (senses) {
-                            return Repromise.Rejectable[/* all */8](Belt_List.map(senses, (function (sense) {
-                                              return Wordnet$Wordnet.synsetForSenseId(sense[/* id */0]);
-                                            })));
-                          }), Wordnet$Wordnet.searchSenses("wypadek drogowy")))));
+                  }), Repromise.Rejectable[/* map */5]((function (param) {
+                        return /* tuple */[
+                                param[0],
+                                Belt_Set.toList(Belt_Set.fromArray(Belt_List.toArray(Belt_List.flatten(param[1])), Domain$Wordnet.RelationCmp))
+                              ];
+                      }), Repromise.Rejectable[/* andThen */4]((function (synsetIds) {
+                            return Repromise.Rejectable[/* map */5]((function (relations) {
+                                          return /* tuple */[
+                                                  synsetIds,
+                                                  relations
+                                                ];
+                                        }), Repromise.Rejectable[/* all */8](Belt_List.map(Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(synsetIds))), (function (synsetId) {
+                                                  return Relations$Wordnet.network(synsetId, 2, /* () */0);
+                                                }))));
+                          }), Repromise.Rejectable[/* all */8](Belt_List.map(numberedSenses, (function (sense) {
+                                    return Repromise.Rejectable[/* andThen */4]((function (sense) {
+                                                  return Wordnet$Wordnet.synsetForSenseId(sense[/* id */0]);
+                                                }), Repromise.Rejectable[/* map */5](Belt_List.headExn, Repromise.Rejectable[/* map */5]((function (senses) {
+                                                          return Belt_List.keep(senses, (function (s) {
+                                                                        if (s[/* lemma */1] === sense[/* lemma */0]) {
+                                                                          return s[/* senseNumber */3] === sense[/* senseNumber */1];
+                                                                        } else {
+                                                                          return false;
+                                                                        }
+                                                                      }));
+                                                        }), Wordnet$Wordnet.searchSenses(sense[/* lemma */0]))));
+                                  })))))));
 }
 
-var component = ReasonReact.reducerComponent("Two-Wordnet");
+var component = ReasonReact.reducerComponent("Five-Wordnet");
 
 function make(param) {
   return /* record */[
@@ -101,15 +143,11 @@ function make(param) {
           /* willUpdate */component[/* willUpdate */7],
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
-              var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                                "Find closure of",
-                                React.createElement("b", undefined, " hypernymy "),
-                                "relation for the first meaning of the \"wypadek drogowy\" expression. Create diagram of the relations as a directed graph."
-                              ])), /* array */[]));
-              var nodes = Belt_Array.map(Belt_List.toArray(Domain$Wordnet.distinctSynsets(self[/* state */1][/* relations */0])), (function (synsetId) {
+              var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Display as a directed graph semantic relations between the groups of lexemes."])), /* array */[]));
+              var nodes = Belt_Array.map(Belt_MapInt.valuesToArray(self[/* state */1][/* synsetMap */1]), (function (synset) {
                       return {
-                              id: synsetId,
-                              label: Util$Wordnet.label(synsetId, self[/* state */1][/* synsetMap */1]),
+                              id: synset[/* synsetId */0],
+                              label: Util$Wordnet.label(synset[/* synsetId */0], self[/* state */1][/* synsetMap */1]),
                               group: undefined
                             };
                     }));
@@ -117,7 +155,7 @@ function make(param) {
                           return {
                                   from: relation[/* relFrom */1],
                                   to: relation[/* relTo */2],
-                                  label: undefined
+                                  label: relation[/* relationName */5]
                                 };
                         })));
               var options = {
@@ -128,10 +166,10 @@ function make(param) {
                 },
                 edges: {
                   width: 1,
-                  length: 100,
+                  length: 200,
                   shadow: true,
                   smooth: {
-                    type: "continuous"
+                    type: "dynamic"
                   }
                 }
               };
@@ -147,8 +185,11 @@ function make(param) {
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, param) {
+              var relations = action[0];
+              console.log("loaded");
+              console.log(Belt_List.toArray(relations));
               return /* Update */Block.__(0, [/* record */[
-                          /* relations */action[0],
+                          /* relations */relations,
                           /* synsetMap */action[1],
                           /* ready */true
                         ]]);
@@ -159,7 +200,8 @@ function make(param) {
 
 exports.Styles = Styles;
 exports.initialState = initialState;
+exports.numberedSenses = numberedSenses;
 exports.loadRelations = loadRelations;
 exports.component = component;
 exports.make = make;
-/* progressContainer Not a pure module */
+/* boldText Not a pure module */

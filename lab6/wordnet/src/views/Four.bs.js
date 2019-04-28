@@ -5,7 +5,6 @@ var Css = require("bs-css/src/Css.js");
 var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
 var Belt_Set = require("bs-platform/lib/js/belt_Set.js");
-var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Belt_List = require("bs-platform/lib/js/belt_List.js");
 var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
@@ -15,7 +14,6 @@ var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Util$Wordnet = require("../infrastructure/Util.bs.js");
 var Graph$Wordnet = require("../infrastructure/Graph.bs.js");
 var Domain$Wordnet = require("../domain/Domain.bs.js");
-var Caml_exceptions = require("bs-platform/lib/js/caml_exceptions.js");
 var Wordnet$Wordnet = require("../infrastructure/Wordnet.bs.js");
 var Relations$Wordnet = require("../domain/Relations.bs.js");
 var MaterialUi_Typography = require("@jsiebern/bs-material-ui/src/MaterialUi_Typography.bs.js");
@@ -27,8 +25,13 @@ var boldText = Css.style(/* :: */[
       /* [] */0
     ]);
 
+var root = Css.style(/* :: */[
+      Css.height(Css.pct(90)),
+      /* [] */0
+    ]);
+
 var graphContainer = Css.style(/* :: */[
-      Css.height(Css.rem(30)),
+      Css.height(Css.pct(90)),
       /* :: */[
         Css.width(Css.pct(90)),
         /* :: */[
@@ -54,6 +57,7 @@ var progressContainer = Css.style(/* :: */[
 
 var Styles = /* module */[
   /* boldText */boldText,
+  /* root */root,
   /* graphContainer */graphContainer,
   /* progressContainer */progressContainer
 ];
@@ -114,8 +118,6 @@ var numberedSenses = /* :: */[
   ]
 ];
 
-var Test = Caml_exceptions.create("Four-Wordnet.Test");
-
 function loadRelations(send) {
   return Repromise.Rejectable[/* wait */6](send, Repromise.Rejectable[/* andThen */4]((function (param) {
                     var relations = param[1];
@@ -150,15 +152,7 @@ function loadRelations(send) {
                                                   relations
                                                 ];
                                         }), Repromise.Rejectable[/* all */8](Belt_List.map(Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(synsetIds))), (function (synsetId) {
-                                                  return Repromise.Rejectable[/* map */5]((function (relations) {
-                                                                return Belt_List.keep(relations, (function (relation) {
-                                                                              if (Belt_List.has(synsetIds, relation[/* relFrom */1], Caml_obj.caml_equal)) {
-                                                                                return Belt_List.has(synsetIds, relation[/* relTo */2], Caml_obj.caml_equal);
-                                                                              } else {
-                                                                                return false;
-                                                                              }
-                                                                            }));
-                                                              }), Relations$Wordnet.network(synsetId, 2, /* () */0));
+                                                  return Relations$Wordnet.network(synsetId, 2, /* () */0);
                                                 }))));
                           }), Repromise.Rejectable[/* all */8](Belt_List.map(numberedSenses, (function (sense) {
                                     return Repromise.Rejectable[/* andThen */4]((function (sense) {
@@ -192,12 +186,23 @@ function make(param) {
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
               var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Display as a directed graph semantic relations between the groups of lexemes."])), /* array */[]));
-              var nodes = Belt_Array.map(Belt_List.toArray(Domain$Wordnet.distinctSynsets(self[/* state */1][/* relations */0])), (function (synsetId) {
+              var synsetIds = Belt_List.fromArray(Belt_MapInt.keysToArray(self[/* state */1][/* synsetMap */1]));
+              var synsets = Belt_MapInt.valuesToArray(self[/* state */1][/* synsetMap */1]);
+              var mainNodes = Belt_Array.map(synsets, (function (synset) {
                       return {
-                              id: synsetId,
-                              label: Util$Wordnet.label(synsetId, self[/* state */1][/* synsetMap */1])
+                              id: synset[/* synsetId */0],
+                              label: Util$Wordnet.label(synset[/* synsetId */0], self[/* state */1][/* synsetMap */1]),
+                              group: 1
                             };
                     }));
+              var sideNodes = Belt_Array.map(Belt_List.toArray(Relations$Wordnet.closure(synsetIds, self[/* state */1][/* relations */0])), (function (synsetId) {
+                      return {
+                              id: synsetId,
+                              label: Util$Wordnet.label(synsetId, self[/* state */1][/* synsetMap */1]),
+                              group: 2
+                            };
+                    }));
+              var nodes = Belt_Array.concat(mainNodes, sideNodes);
               var edges = Belt_List.toArray(Belt_List.map(self[/* state */1][/* relations */0], (function (relation) {
                           return {
                                   from: relation[/* relFrom */1],
@@ -213,6 +218,7 @@ function make(param) {
                 },
                 edges: {
                   width: 1,
+                  length: 200,
                   shadow: true,
                   smooth: {
                     type: "dynamic"
@@ -220,7 +226,9 @@ function make(param) {
                 }
               };
               var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, options, /* array */[]));
-              return React.createElement("div", undefined, description, React.createElement("div", {
+              return React.createElement("div", {
+                          className: root
+                        }, description, React.createElement("div", {
                               className: graphContainer
                             }, self[/* state */1][/* ready */2] ? graph : React.createElement("div", {
                                     className: progressContainer
@@ -247,7 +255,6 @@ function make(param) {
 exports.Styles = Styles;
 exports.initialState = initialState;
 exports.numberedSenses = numberedSenses;
-exports.Test = Test;
 exports.loadRelations = loadRelations;
 exports.component = component;
 exports.make = make;

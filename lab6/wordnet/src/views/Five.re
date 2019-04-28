@@ -6,9 +6,7 @@ module Styles = {
 
   let boldText = style([fontWeight(`bold)]);
 
-  let root = style([height(pct(90.))]);
-
-  let graphContainer = style([height(pct(90.)), width(pct(90.)), display(`flex), justifyContent(`center)]);
+  let graphContainer = style([height(rem(40.)), width(pct(90.)), display(`flex), justifyContent(`center)]);
 
   let progressContainer = style([display(`flex), alignItems(`center), height(rem(14.))]);
 };
@@ -29,26 +27,7 @@ type numberedSense = {
   senseNumber: int,
 };
 
-// let numberedSenses = [
-//   {lemma: {j|szkoda|j}, senseNumber: 2},
-//   {lemma: {j|strata|j}, senseNumber: 1},
-//   {lemma: {j|uszczerbek|j}, senseNumber: 1},
-//   {lemma: {j|uszczerbek na zdrowiu|j}, senseNumber: 1},
-//   {lemma: {j|krzywda|j}, senseNumber: 1},
-//   {lemma: {j|niesprawiedliwość|j}, senseNumber: 1},
-//   {lemma: {j|nieszczęście|j}, senseNumber: 2},
-// ];
-
-let numberedSenses = [
-  {lemma: {j|wypadek|j}, senseNumber: 1},
-  {lemma: {j|wypadek komunikacyjny|j}, senseNumber: 1},
-  {lemma: {j|kolizja|j}, senseNumber: 2},
-  {lemma: {j|zderzenie|j}, senseNumber: 2},
-  {lemma: {j|kolizja drogowa|j}, senseNumber: 1},
-  {lemma: {j|bezkolizyjny|j}, senseNumber: 2},
-  {lemma: {j|katastrofa budowlana|j}, senseNumber: 1},
-  {lemma: {j|wypadek drogowy|j}, senseNumber: 1},
-];
+let numberedSenses = [{lemma: {j|szkoda|j}, senseNumber: 2}, {lemma: {j|wypadek|j}, senseNumber: 1}];
 
 let loadRelations = (send: action => unit) =>
   all(
@@ -108,18 +87,10 @@ let make = _ => {
         }
       />;
 
-    let synsetIds = self.state.synsetMap->Belt_MapInt.keysToArray->List.fromArray;
-    let synsets = self.state.synsetMap->Belt_MapInt.valuesToArray;
-
-    let mainNodes: array(Graph.node) =
-      synsets->Array.map(synset => {"id": synset.synsetId, "label": Util.label(synset.synsetId, self.state.synsetMap), "group": Some(1)});
-
-    let sideNodes: array(Graph.node) =
-      Relations.closure(synsetIds, self.state.relations)
-      ->List.toArray
-      ->Array.map(synsetId => {"id": synsetId, "label": Util.label(synsetId, self.state.synsetMap), "group": Some(2)});
-
-    let nodes = Array.concat(mainNodes, sideNodes);
+    let nodes: array(Graph.node) =
+      self.state.synsetMap
+      ->Belt_MapInt.valuesToArray
+      ->Array.map(synset => {"id": synset.synsetId, "label": Util.label(synset.synsetId, self.state.synsetMap), "group": None});
 
     let edges: array(Graph.edge) =
       self.state.relations
@@ -144,7 +115,7 @@ let make = _ => {
 
     let graph = <Graph nodes edges options />;
 
-    <div className=Styles.root>
+    <div>
       description
       <div className=Styles.graphContainer>
         {if (self.state.ready) {

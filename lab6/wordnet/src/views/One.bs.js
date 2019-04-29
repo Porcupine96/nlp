@@ -26,7 +26,10 @@ var columnContainer = Css.style(/* :: */[
           Css.display(/* flex */-1010954439),
           /* :: */[
             Css.justifyContent(/* center */98248149),
-            /* [] */0
+            /* :: */[
+              Css.marginTop(Css.rem(2)),
+              /* [] */0
+            ]
           ]
         ]
       ]

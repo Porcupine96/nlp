@@ -10,6 +10,19 @@ module Styles = {
 
   let setPickerContainer = style([height(rem(3.)), width(pct(90.)), display(`flex)]);
 
+  let container = style([height(rem(6.)), width(pct(90.)), display(`flex)]);
+
+  let distanceBlock =
+    style([
+      height(rem(6.)),
+      width(rem(16.)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      marginLeft(rem(0.)),
+      marginRight(`auto),
+    ]);
+
   let setPicker = style([width(rem(16.)), marginRight(rem(0.)), marginLeft(`auto)]);
 
   let graphContainer = style([height(pct(90.)), width(pct(90.)), display(`flex), justifyContent(`center)]);
@@ -116,6 +129,9 @@ let make = _ => {
         }
       />;
 
+    let distanceBlock =
+      <M.Paper className=Styles.distanceBlock> <M.Typography> {ReasonReact.string("Leacock Chodorow: 1.704123")} </M.Typography> </M.Paper>;
+
     let chooseWord = (index: int, onChange: int => unit) => {
       <div className=Styles.setPickerContainer>
         <M.Select className=Styles.setPicker value={`Int(index)} onChange={(_, update) => onChange(update##props##value)}>
@@ -165,8 +181,13 @@ let make = _ => {
 
     <div className=Styles.root>
       description
-      {chooseWord(self.state.leftIndex, wordIndex => self.send(LeftWordChosen(wordIndex)))}
-      {chooseWord(self.state.rightIndex, wordIndex => self.send(RightWordChosen(wordIndex)))}
+      <div className=Styles.container>
+        distanceBlock
+        <div>
+          {chooseWord(self.state.leftIndex, wordIndex => self.send(LeftWordChosen(wordIndex)))}
+          {chooseWord(self.state.rightIndex, wordIndex => self.send(RightWordChosen(wordIndex)))}
+        </div>
+      </div>
       <div className=Styles.graphContainer>
         {if (self.state.ready) {
            graph;

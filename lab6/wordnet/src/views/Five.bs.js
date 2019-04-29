@@ -16,6 +16,7 @@ var Util$Wordnet = require("../infrastructure/Util.bs.js");
 var Graph$Wordnet = require("../infrastructure/Graph.bs.js");
 var Domain$Wordnet = require("../domain/Domain.bs.js");
 var Wordnet$Wordnet = require("../infrastructure/Wordnet.bs.js");
+var MaterialUi_Paper = require("@jsiebern/bs-material-ui/src/MaterialUi_Paper.bs.js");
 var MaterialUi_Select = require("@jsiebern/bs-material-ui/src/MaterialUi_Select.bs.js");
 var Relations$Wordnet = require("../domain/Relations.bs.js");
 var MaterialUi_MenuItem = require("@jsiebern/bs-material-ui/src/MaterialUi_MenuItem.bs.js");
@@ -40,6 +41,40 @@ var setPickerContainer = Css.style(/* :: */[
         /* :: */[
           Css.display(/* flex */-1010954439),
           /* [] */0
+        ]
+      ]
+    ]);
+
+var container = Css.style(/* :: */[
+      Css.height(Css.rem(6)),
+      /* :: */[
+        Css.width(Css.pct(90)),
+        /* :: */[
+          Css.display(/* flex */-1010954439),
+          /* [] */0
+        ]
+      ]
+    ]);
+
+var distanceBlock = Css.style(/* :: */[
+      Css.height(Css.rem(6)),
+      /* :: */[
+        Css.width(Css.rem(16)),
+        /* :: */[
+          Css.display(/* flex */-1010954439),
+          /* :: */[
+            Css.justifyContent(/* center */98248149),
+            /* :: */[
+              Css.alignItems(/* center */98248149),
+              /* :: */[
+                Css.marginLeft(Css.rem(0)),
+                /* :: */[
+                  Css.marginRight(/* auto */-1065951377),
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
         ]
       ]
     ]);
@@ -84,6 +119,8 @@ var Styles = /* module */[
   /* boldText */boldText,
   /* root */root,
   /* setPickerContainer */setPickerContainer,
+  /* container */container,
+  /* distanceBlock */distanceBlock,
   /* setPicker */setPicker,
   /* graphContainer */graphContainer,
   /* progressContainer */progressContainer
@@ -197,6 +234,7 @@ function make(param) {
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
               var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Display as a directed graph semantic relations between the groups of lexemes."])), /* array */[]));
+              var distanceBlock$1 = ReasonReact.element(undefined, undefined, MaterialUi_Paper.make(distanceBlock, undefined, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Leacock Chodorow: 1.704123"]))]));
               var chooseWord = function (index, onChange) {
                 return React.createElement("div", {
                             className: setPickerContainer
@@ -253,11 +291,13 @@ function make(param) {
               var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, options, /* array */[]));
               return React.createElement("div", {
                           className: root
-                        }, description, chooseWord(self[/* state */1][/* leftIndex */3], (function (wordIndex) {
-                                return Curry._1(self[/* send */3], /* LeftWordChosen */Block.__(1, [wordIndex]));
-                              })), chooseWord(self[/* state */1][/* rightIndex */4], (function (wordIndex) {
-                                return Curry._1(self[/* send */3], /* RightWordChosen */Block.__(2, [wordIndex]));
-                              })), React.createElement("div", {
+                        }, description, React.createElement("div", {
+                              className: container
+                            }, distanceBlock$1, React.createElement("div", undefined, chooseWord(self[/* state */1][/* leftIndex */3], (function (wordIndex) {
+                                        return Curry._1(self[/* send */3], /* LeftWordChosen */Block.__(1, [wordIndex]));
+                                      })), chooseWord(self[/* state */1][/* rightIndex */4], (function (wordIndex) {
+                                        return Curry._1(self[/* send */3], /* RightWordChosen */Block.__(2, [wordIndex]));
+                                      })))), React.createElement("div", {
                               className: graphContainer
                             }, self[/* state */1][/* ready */5] ? graph : React.createElement("div", {
                                     className: progressContainer

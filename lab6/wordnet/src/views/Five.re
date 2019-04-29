@@ -114,7 +114,7 @@ let make = _ => {
   reducer: (action, state) =>
     switch (action) {
     | RelationsLoaded(synsetIds, relations, synsetMap) =>
-      let distance = Relations.shortestPathLength(synsetIds, relations)->Option.map(shortestPath => LCH.calculate(~shortestPath, ()));
+      let distance = Relations.shortestPathLength(synsetIds, relations)->Option.flatMap(shortestPath => LCH.calculate(~shortestPath, ()));
       ReasonReact.Update({...state, relations, synsetIds, synsetMap, distance, ready: true});
     | LeftWordChosen(leftIndex) =>
       ReasonReact.UpdateWithSideEffects(

@@ -5,7 +5,7 @@
 function calculate(shortestPath, $staropt$star, param) {
   var depth = $staropt$star !== undefined ? $staropt$star : 11;
   if (shortestPath === 0) {
-    return 0;
+    return undefined;
   } else {
     return -Math.log(shortestPath / (2 * depth));
   }

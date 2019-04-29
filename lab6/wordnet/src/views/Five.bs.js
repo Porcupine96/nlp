@@ -328,7 +328,7 @@ function make(param) {
                 case 0 : 
                     var relations = action[1];
                     var synsetIds = action[0];
-                    var distance = Belt_Option.map(Relations$Wordnet.shortestPathLength(synsetIds, relations), (function (shortestPath) {
+                    var distance = Belt_Option.flatMap(Relations$Wordnet.shortestPathLength(synsetIds, relations), (function (shortestPath) {
                             return LCH$Wordnet.calculate(shortestPath, undefined, /* () */0);
                           }));
                     return /* Update */Block.__(0, [/* record */[

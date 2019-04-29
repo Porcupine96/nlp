@@ -22,7 +22,7 @@ var container = Css.style(/* :: */[
 
 var Styles = /* module */[/* container */container];
 
-var initialState = /* record */[/* route : Four */3];
+var initialState = /* record */[/* route : Five */4];
 
 var component = ReasonReact.reducerComponent("Application-Wordnet");
 

@@ -10,7 +10,7 @@ module Styles = {
 
   let setPickerContainer = style([height(rem(3.)), width(pct(90.)), display(`flex)]);
 
-  let setPicker = style([width(rem(5.)), marginRight(rem(0.)), marginLeft(`auto)]);
+  let setPicker = style([width(rem(16.)), marginRight(rem(0.)), marginLeft(`auto)]);
 
   let graphContainer = style([height(pct(90.)), width(pct(90.)), display(`flex), justifyContent(`center)]);
 
@@ -19,36 +19,36 @@ module Styles = {
 
 type action =
   | RelationsLoaded(list(int), list(Domain.relation), Belt_MapInt.t(Domain.synset))
-  | SetChanged(int);
+  | LeftWordChosen(int)
+  | RightWordChosen(int);
 
 type state = {
   relations: list(Domain.relation),
   synsetIds: list(int),
   synsetMap: Belt_MapInt.t(Domain.synset),
-  setIndex: int,
+  leftIndex: int,
+  rightIndex: int,
   ready: bool,
 };
 
-let initialState = {relations: [], synsetIds: [], synsetMap: Belt_MapInt.empty, setIndex: 1, ready: false};
+let initialState = {relations: [], synsetIds: [], synsetMap: Belt_MapInt.empty, leftIndex: 0, rightIndex: 1, ready: false};
 
 type numberedSense = {
   lemma: string,
   senseNumber: int,
 };
 
-let setOne = [{lemma: {j|szkoda|j}, senseNumber: 2}, {lemma: {j|wypadek|j}, senseNumber: 1}];
+let words = [|
+  {lemma: {j|szkoda|j}, senseNumber: 2},
+  {lemma: {j|wypadek|j}, senseNumber: 1},
+  {lemma: {j|kolizja|j}, senseNumber: 2},
+  {lemma: {j|nieszczęście|j}, senseNumber: 2},
+  {lemma: {j|katastrofa budowlana|j}, senseNumber: 1},
+|];
 
-let setTwo = [];
-
-let setForIndex = (index: int) =>
-  switch (index) {
-  | 1 => setOne
-  | _ => setTwo
-  };
-
-let loadRelations = (~setIndex: int, send: action => unit) =>
+let loadRelations = (~leftIndex: int, ~rightIndex: int, send: action => unit) =>
   all(
-    setForIndex(setIndex)
+    [words->Array.getExn(leftIndex), words->Array.getExn(rightIndex)]
     ->List.map(sense =>
         Wordnet.searchSenses(sense.lemma)
         |> map((senses: list(Domain.sense)) => senses->List.keep(s => s.lemma == sense.lemma && s.senseNumber == sense.senseNumber))
@@ -93,11 +93,20 @@ let component = ReasonReact.reducerComponent(__MODULE__);
 let make = _ => {
   ...component,
   initialState: () => initialState,
-  didMount: self => loadRelations(~setIndex=self.state.setIndex, self.send),
+  didMount: self => loadRelations(~leftIndex=self.state.leftIndex, ~rightIndex=self.state.rightIndex, self.send),
   reducer: (action, state) =>
     switch (action) {
     | RelationsLoaded(synsetIds, relations, synsetMap) => ReasonReact.Update({...state, relations, synsetIds, synsetMap, ready: true})
-    | SetChanged(setIndex) => ReasonReact.UpdateWithSideEffects({...state, setIndex, ready: false}, self => loadRelations(~setIndex, self.send))
+    | LeftWordChosen(leftIndex) =>
+      ReasonReact.UpdateWithSideEffects(
+        {...state, leftIndex, ready: false},
+        self => loadRelations(~leftIndex, ~rightIndex=self.state.rightIndex, self.send),
+      )
+    | RightWordChosen(rightIndex) =>
+      ReasonReact.UpdateWithSideEffects(
+        {...state, rightIndex, ready: false},
+        self => loadRelations(~leftIndex=self.state.leftIndex, ~rightIndex, self.send),
+      )
     },
   render: self => {
     let description =
@@ -107,14 +116,17 @@ let make = _ => {
         }
       />;
 
-    let chooseSet =
+    let chooseWord = (index: int, onChange: int => unit) => {
       <div className=Styles.setPickerContainer>
-        <M.Select
-          className=Styles.setPicker value={`Int(self.state.setIndex)} onChange={(_, update) => self.send(SetChanged(update##props##value))}>
-          <M.MenuItem value={`Int(1)}> {ReasonReact.string("Set 1")} </M.MenuItem>
-          <M.MenuItem value={`Int(2)}> {ReasonReact.string("Set 2")} </M.MenuItem>
+        <M.Select className=Styles.setPicker value={`Int(index)} onChange={(_, update) => onChange(update##props##value)}>
+          {words
+           ->Array.zip(Array.range(0, Array.length(words)))
+           ->Array.map(((word, index)) =>
+               <M.MenuItem value={`Int(index)}> {ReasonReact.string(word.lemma ++ " (" ++ string_of_int(word.senseNumber) ++ ")")} </M.MenuItem>
+             )}
         </M.Select>
       </div>;
+    };
 
     let mainNodes: array(Graph.node) =
       self.state.synsetIds
@@ -153,7 +165,8 @@ let make = _ => {
 
     <div className=Styles.root>
       description
-      chooseSet
+      {chooseWord(self.state.leftIndex, wordIndex => self.send(LeftWordChosen(wordIndex)))}
+      {chooseWord(self.state.rightIndex, wordIndex => self.send(RightWordChosen(wordIndex)))}
       <div className=Styles.graphContainer>
         {if (self.state.ready) {
            graph;

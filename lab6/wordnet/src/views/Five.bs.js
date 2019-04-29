@@ -45,7 +45,7 @@ var setPickerContainer = Css.style(/* :: */[
     ]);
 
 var setPicker = Css.style(/* :: */[
-      Css.width(Css.rem(5)),
+      Css.width(Css.rem(16)),
       /* :: */[
         Css.marginRight(Css.rem(0)),
         /* :: */[
@@ -93,33 +93,35 @@ var initialState = /* record */[
   /* relations : [] */0,
   /* synsetIds : [] */0,
   /* synsetMap */Belt_MapInt.empty,
-  /* setIndex */1,
+  /* leftIndex */0,
+  /* rightIndex */1,
   /* ready */false
 ];
 
-var setOne = /* :: */[
+var words = /* array */[
   /* record */[
     /* lemma */"szkoda",
     /* senseNumber */2
   ],
-  /* :: */[
-    /* record */[
-      /* lemma */"wypadek",
-      /* senseNumber */1
-    ],
-    /* [] */0
+  /* record */[
+    /* lemma */"wypadek",
+    /* senseNumber */1
+  ],
+  /* record */[
+    /* lemma */"kolizja",
+    /* senseNumber */2
+  ],
+  /* record */[
+    /* lemma */"nieszczęście",
+    /* senseNumber */2
+  ],
+  /* record */[
+    /* lemma */"katastrofa budowlana",
+    /* senseNumber */1
   ]
 ];
 
-function setForIndex(index) {
-  if (index !== 1) {
-    return /* [] */0;
-  } else {
-    return setOne;
-  }
-}
-
-function loadRelations(setIndex, send) {
+function loadRelations(leftIndex, rightIndex, send) {
   return Repromise.Rejectable[/* wait */6](send, Repromise.Rejectable[/* andThen */4]((function (param) {
                     var relations = param[1];
                     var distinctSynsetIds = Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(param[0])));
@@ -157,7 +159,13 @@ function loadRelations(setIndex, send) {
                                         }), Repromise.Rejectable[/* all */8](Belt_List.map(Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(synsetIds))), (function (synsetId) {
                                                   return Relations$Wordnet.network(synsetId, 2, /* () */0);
                                                 }))));
-                          }), Repromise.Rejectable[/* all */8](Belt_List.map(setForIndex(setIndex), (function (sense) {
+                          }), Repromise.Rejectable[/* all */8](Belt_List.map(/* :: */[
+                                  Belt_Array.getExn(words, leftIndex),
+                                  /* :: */[
+                                    Belt_Array.getExn(words, rightIndex),
+                                    /* [] */0
+                                  ]
+                                ], (function (sense) {
                                     return Repromise.Rejectable[/* andThen */4]((function (sense) {
                                                   return Wordnet$Wordnet.synsetForSenseId(sense[/* id */0]);
                                                 }), Repromise.Rejectable[/* map */5](Belt_List.headExn, Repromise.Rejectable[/* map */5]((function (senses) {
@@ -181,7 +189,7 @@ function make(param) {
           /* handedOffState */component[/* handedOffState */2],
           /* willReceiveProps */component[/* willReceiveProps */3],
           /* didMount */(function (self) {
-              return loadRelations(self[/* state */1][/* setIndex */3], self[/* send */3]);
+              return loadRelations(self[/* state */1][/* leftIndex */3], self[/* state */1][/* rightIndex */4], self[/* send */3]);
             }),
           /* didUpdate */component[/* didUpdate */5],
           /* willUnmount */component[/* willUnmount */6],
@@ -189,23 +197,22 @@ function make(param) {
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
               var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Display as a directed graph semantic relations between the groups of lexemes."])), /* array */[]));
-              var chooseSet = React.createElement("div", {
-                    className: setPickerContainer
-                  }, ReasonReact.element(undefined, undefined, MaterialUi_Select.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, (function (param, update) {
-                              return Curry._1(self[/* send */3], /* SetChanged */Block.__(1, [update.props.value]));
-                            }), undefined, undefined, undefined, undefined, undefined, /* `Int */[
-                            3654863,
-                            self[/* state */1][/* setIndex */3]
-                          ], undefined, undefined, undefined, setPicker, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[
-                            ReasonReact.element(undefined, undefined, MaterialUi_MenuItem.make(undefined, undefined, undefined, undefined, undefined, /* `Int */[
-                                      3654863,
-                                      1
-                                    ], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Set 1"])),
-                            ReasonReact.element(undefined, undefined, MaterialUi_MenuItem.make(undefined, undefined, undefined, undefined, undefined, /* `Int */[
-                                      3654863,
-                                      2
-                                    ], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Set 2"]))
-                          ])));
+              var chooseWord = function (index, onChange) {
+                return React.createElement("div", {
+                            className: setPickerContainer
+                          }, ReasonReact.element(undefined, undefined, MaterialUi_Select.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, (function (param, update) {
+                                      return Curry._1(onChange, update.props.value);
+                                    }), undefined, undefined, undefined, undefined, undefined, /* `Int */[
+                                    3654863,
+                                    index
+                                  ], undefined, undefined, undefined, setPicker, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[Belt_Array.map(Belt_Array.zip(words, Belt_Array.range(0, words.length)), (function (param) {
+                                            var word = param[0];
+                                            return ReasonReact.element(undefined, undefined, MaterialUi_MenuItem.make(undefined, undefined, undefined, undefined, undefined, /* `Int */[
+                                                            3654863,
+                                                            param[1]
+                                                          ], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[word[/* lemma */0] + (" (" + (String(word[/* senseNumber */1]) + ")"))]));
+                                          }))])));
+              };
               var mainNodes = Belt_Array.map(Belt_List.toArray(self[/* state */1][/* synsetIds */1]), (function (synsetId) {
                       return {
                               id: synsetId,
@@ -246,9 +253,13 @@ function make(param) {
               var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, options, /* array */[]));
               return React.createElement("div", {
                           className: root
-                        }, description, chooseSet, React.createElement("div", {
+                        }, description, chooseWord(self[/* state */1][/* leftIndex */3], (function (wordIndex) {
+                                return Curry._1(self[/* send */3], /* LeftWordChosen */Block.__(1, [wordIndex]));
+                              })), chooseWord(self[/* state */1][/* rightIndex */4], (function (wordIndex) {
+                                return Curry._1(self[/* send */3], /* RightWordChosen */Block.__(2, [wordIndex]));
+                              })), React.createElement("div", {
                               className: graphContainer
-                            }, self[/* state */1][/* ready */4] ? graph : React.createElement("div", {
+                            }, self[/* state */1][/* ready */5] ? graph : React.createElement("div", {
                                     className: progressContainer
                                   }, ReasonReact.element(undefined, undefined, MaterialUi_CircularProgress.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[])))));
             }),
@@ -257,41 +268,56 @@ function make(param) {
             }),
           /* retainedProps */component[/* retainedProps */11],
           /* reducer */(function (action, state) {
-              if (action.tag) {
-                var setIndex = action[0];
-                return /* UpdateWithSideEffects */Block.__(2, [
-                          /* record */[
-                            /* relations */state[/* relations */0],
-                            /* synsetIds */state[/* synsetIds */1],
-                            /* synsetMap */state[/* synsetMap */2],
-                            /* setIndex */setIndex,
-                            /* ready */false
-                          ],
-                          (function (self) {
-                              return loadRelations(setIndex, self[/* send */3]);
-                            })
-                        ]);
-              } else {
-                return /* Update */Block.__(0, [/* record */[
-                            /* relations */action[1],
-                            /* synsetIds */action[0],
-                            /* synsetMap */action[2],
-                            /* setIndex */state[/* setIndex */3],
-                            /* ready */true
-                          ]]);
+              switch (action.tag | 0) {
+                case 0 : 
+                    return /* Update */Block.__(0, [/* record */[
+                                /* relations */action[1],
+                                /* synsetIds */action[0],
+                                /* synsetMap */action[2],
+                                /* leftIndex */state[/* leftIndex */3],
+                                /* rightIndex */state[/* rightIndex */4],
+                                /* ready */true
+                              ]]);
+                case 1 : 
+                    var leftIndex = action[0];
+                    return /* UpdateWithSideEffects */Block.__(2, [
+                              /* record */[
+                                /* relations */state[/* relations */0],
+                                /* synsetIds */state[/* synsetIds */1],
+                                /* synsetMap */state[/* synsetMap */2],
+                                /* leftIndex */leftIndex,
+                                /* rightIndex */state[/* rightIndex */4],
+                                /* ready */false
+                              ],
+                              (function (self) {
+                                  return loadRelations(leftIndex, self[/* state */1][/* rightIndex */4], self[/* send */3]);
+                                })
+                            ]);
+                case 2 : 
+                    var rightIndex = action[0];
+                    return /* UpdateWithSideEffects */Block.__(2, [
+                              /* record */[
+                                /* relations */state[/* relations */0],
+                                /* synsetIds */state[/* synsetIds */1],
+                                /* synsetMap */state[/* synsetMap */2],
+                                /* leftIndex */state[/* leftIndex */3],
+                                /* rightIndex */rightIndex,
+                                /* ready */false
+                              ],
+                              (function (self) {
+                                  return loadRelations(self[/* state */1][/* leftIndex */3], rightIndex, self[/* send */3]);
+                                })
+                            ]);
+                
               }
             }),
           /* jsElementWrapped */component[/* jsElementWrapped */13]
         ];
 }
 
-var setTwo = /* [] */0;
-
 exports.Styles = Styles;
 exports.initialState = initialState;
-exports.setOne = setOne;
-exports.setTwo = setTwo;
-exports.setForIndex = setForIndex;
+exports.words = words;
 exports.loadRelations = loadRelations;
 exports.component = component;
 exports.make = make;

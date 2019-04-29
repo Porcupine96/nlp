@@ -17,10 +17,10 @@ module Styles = {
       height(rem(6.)),
       width(rem(16.)),
       display(`flex),
-      justifyContent(`center),
       alignItems(`center),
       marginLeft(rem(0.)),
       marginRight(`auto),
+      paddingLeft(rem(2.)),
     ]);
 
   let setPicker = style([width(rem(16.)), marginRight(rem(0.)), marginLeft(`auto)]);
@@ -41,10 +41,11 @@ type state = {
   synsetMap: Belt_MapInt.t(Domain.synset),
   leftIndex: int,
   rightIndex: int,
+  distance: option(float),
   ready: bool,
 };
 
-let initialState = {relations: [], synsetIds: [], synsetMap: Belt_MapInt.empty, leftIndex: 0, rightIndex: 1, ready: false};
+let initialState = {relations: [], synsetIds: [], synsetMap: Belt_MapInt.empty, leftIndex: 0, rightIndex: 1, distance: None, ready: false};
 
 type numberedSense = {
   lemma: string,
@@ -54,6 +55,7 @@ type numberedSense = {
 let words = [|
   {lemma: {j|szkoda|j}, senseNumber: 2},
   {lemma: {j|wypadek|j}, senseNumber: 1},
+  {lemma: {j|kolizja|j}, senseNumber: 1},
   {lemma: {j|kolizja|j}, senseNumber: 2},
   {lemma: {j|nieszczęście|j}, senseNumber: 2},
   {lemma: {j|katastrofa budowlana|j}, senseNumber: 1},
@@ -75,7 +77,9 @@ let loadRelations = (~leftIndex: int, ~rightIndex: int, send: action => unit) =>
          ->List.toArray
          ->Belt_SetInt.fromArray
          ->Belt_SetInt.toList
-         ->List.map(synsetId => synsetId |> (synsetId => Relations.network(synsetId, ~maxDepth=Some(2), ()))),
+         ->List.map(synsetId =>
+             synsetId |> (synsetId => Relations.network(synsetId, ~maxDepth=Some(2), ~relKinds=[|10, 11|]->Belt_SetInt.fromArray, ()))
+           ),
        )
        |> map((relations: list(list(Domain.relation))) => (synsetIds, relations))
      )
@@ -109,7 +113,9 @@ let make = _ => {
   didMount: self => loadRelations(~leftIndex=self.state.leftIndex, ~rightIndex=self.state.rightIndex, self.send),
   reducer: (action, state) =>
     switch (action) {
-    | RelationsLoaded(synsetIds, relations, synsetMap) => ReasonReact.Update({...state, relations, synsetIds, synsetMap, ready: true})
+    | RelationsLoaded(synsetIds, relations, synsetMap) =>
+      let distance = Relations.shortestPathLength(synsetIds, relations)->Option.map(shortestPath => LCH.calculate(~shortestPath, ()));
+      ReasonReact.Update({...state, relations, synsetIds, synsetMap, distance, ready: true});
     | LeftWordChosen(leftIndex) =>
       ReasonReact.UpdateWithSideEffects(
         {...state, leftIndex, ready: false},
@@ -130,7 +136,19 @@ let make = _ => {
       />;
 
     let distanceBlock =
-      <M.Paper className=Styles.distanceBlock> <M.Typography> {ReasonReact.string("Leacock Chodorow: 1.704123")} </M.Typography> </M.Paper>;
+      <M.Paper className=Styles.distanceBlock>
+        <M.Typography>
+          {ReasonReact.string(
+             "Leacock Chodorow: "
+             ++ (
+               switch (self.state.distance) {
+               | Some(dist) => dist |> Js.Float.toFixedWithPrecision(~digits=5)
+               | None => "?"
+               }
+             ),
+           )}
+        </M.Typography>
+      </M.Paper>;
 
     let chooseWord = (index: int, onChange: int => unit) => {
       <div className=Styles.setPickerContainer>

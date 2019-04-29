@@ -235,7 +235,7 @@ function loadRelations(setIndex, send) {
                                                   relations
                                                 ];
                                         }), Repromise.Rejectable[/* all */8](Belt_List.map(Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(synsetIds))), (function (synsetId) {
-                                                  return Relations$Wordnet.network(synsetId, 2, /* () */0);
+                                                  return Relations$Wordnet.network(synsetId, 2, undefined, /* () */0);
                                                 }))));
                           }), Repromise.Rejectable[/* all */8](Belt_List.map(setForIndex(setIndex), (function (sense) {
                                     return Repromise.Rejectable[/* andThen */4]((function (sense) {

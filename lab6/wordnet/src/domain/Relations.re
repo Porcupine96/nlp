@@ -1,7 +1,8 @@
 open Belt;
 open Repromise.Rejectable;
 
-let network = (synsetId: int, ~maxDepth: option(int)=Some(1), ()): Wordnet.jsRepromise(list(Domain.relation)) => {
+let network =
+    (synsetId: int, ~maxDepth: option(int)=Some(1), ~relKinds: option(Belt_SetInt.t)=?, ()): Wordnet.jsRepromise(list(Domain.relation)) => {
   let visited = ref(Belt_SetInt.empty);
   let relationIds = ref(Belt_SetInt.empty);
 
@@ -11,7 +12,12 @@ let network = (synsetId: int, ~maxDepth: option(int)=Some(1), ()): Wordnet.jsRep
     | _ =>
       Wordnet.relationsForSynset(synsetId)
       |> andThen((relations: list(Domain.relation)) => {
-           let newRelations = relations->List.keep(relation => !(relationIds^)->Belt_SetInt.has(relation.id));
+           let allowedRelations =
+             relKinds
+             ->Option.map(allowed => relations->List.keep(relation => allowed->Belt_SetInt.has(Domain.(relation.relationId))))
+             ->Option.getWithDefault(relations);
+
+           let newRelations = allowedRelations->List.keep(relation => !(relationIds^)->Belt_SetInt.has(relation.id));
            newRelations->List.forEach(relation => relationIds := (relationIds^)->Belt_SetInt.add(relation.id));
 
            Repromise.Rejectable.all(
@@ -53,7 +59,7 @@ let rec path = (synsetId: int, relationKind: Domain.relationKind, ~maxLength: op
     |> map(relations => relations->List.flatten)
   };
 
-let nodesInShortesPath = (a: int, b: int, relations: list(Domain.relation)) => {
+let nodesInPath = (a: int, b: int, relations: list(Domain.relation)) => {
   let visited = ref(Belt_SetInt.empty);
 
   let rec _search = (currentNode: int, route: list(int)) =>
@@ -81,10 +87,20 @@ let closure = (synsetIds: list(int), relations: list(Domain.relation)) => {
   synsetIds
   ->List.map(a => synsetIds->List.map(b => (a, b))->List.keep(((a, b)) => a != b))
   ->List.flatten
-  ->List.map(((a, b)) => nodesInShortesPath(a, b, relations))
+  ->List.map(((a, b)) => nodesInPath(a, b, relations))
   ->List.flatten
   ->List.keep(synsetId => !synsetIds->List.has(synsetId, (==)))
   ->List.toArray
   ->Belt_SetInt.fromArray
   ->Belt_SetInt.toList;
+};
+
+let shortestPathLength = (synsetIds: list(int), relations: list(Domain.relation)) => {
+  synsetIds
+  ->List.map(a => synsetIds->List.map(b => (a, b))->List.keep(((a, b)) => a != b))
+  ->List.flatten
+  ->List.map(((a, b)) => nodesInPath(a, b, relations))
+  ->List.sort((a, b) => List.length(a) - List.length(b))
+  ->List.head
+  ->Option.map(path => List.length(path) / 2);
 };

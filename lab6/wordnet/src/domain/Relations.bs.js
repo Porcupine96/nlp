@@ -9,7 +9,7 @@ var Belt_SetInt = require("bs-platform/lib/js/belt_SetInt.js");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var Wordnet$Wordnet = require("../infrastructure/Wordnet.bs.js");
 
-function network(synsetId, $staropt$star, param) {
+function network(synsetId, $staropt$star, relKinds, param) {
   var maxDepth = $staropt$star !== undefined ? Caml_option.valFromOption($staropt$star) : 1;
   var visited = /* record */[/* contents */Belt_SetInt.empty];
   var relationIds = /* record */[/* contents */Belt_SetInt.empty];
@@ -23,7 +23,12 @@ function network(synsetId, $staropt$star, param) {
     }
     if (exit === 1) {
       return Repromise.Rejectable[/* map */5](Belt_List.flatten, Repromise.Rejectable[/* andThen */4]((function (relations) {
-                        var newRelations = Belt_List.keep(relations, (function (relation) {
+                        var allowedRelations = Belt_Option.getWithDefault(Belt_Option.map(relKinds, (function (allowed) {
+                                    return Belt_List.keep(relations, (function (relation) {
+                                                  return Belt_SetInt.has(allowed, relation[/* relationId */4]);
+                                                }));
+                                  })), relations);
+                        var newRelations = Belt_List.keep(allowedRelations, (function (relation) {
                                 return !Belt_SetInt.has(relationIds[0], relation[/* id */0]);
                               }));
                         Belt_List.forEach(newRelations, (function (relation) {
@@ -85,7 +90,7 @@ function path(synsetId, relationKind, $staropt$star, param) {
   
 }
 
-function nodesInShortesPath(a, b, relations) {
+function nodesInPath(a, b, relations) {
   var visited = /* record */[/* contents */Belt_SetInt.empty];
   var _search = function (currentNode, route) {
     if (currentNode === b) {
@@ -120,14 +125,34 @@ function closure(synsetIds, relations) {
                                                           return param[0] !== param[1];
                                                         }));
                                           }))), (function (param) {
-                                    return nodesInShortesPath(param[0], param[1], relations);
+                                    return nodesInPath(param[0], param[1], relations);
                                   }))), (function (synsetId) {
                             return !Belt_List.has(synsetIds, synsetId, Caml_obj.caml_equal);
                           })))));
 }
 
+function shortestPathLength(synsetIds, relations) {
+  return Belt_Option.map(Belt_List.head(Belt_List.sort(Belt_List.map(Belt_List.flatten(Belt_List.map(synsetIds, (function (a) {
+                                    return Belt_List.keep(Belt_List.map(synsetIds, (function (b) {
+                                                      return /* tuple */[
+                                                              a,
+                                                              b
+                                                            ];
+                                                    })), (function (param) {
+                                                  return param[0] !== param[1];
+                                                }));
+                                  }))), (function (param) {
+                            return nodesInPath(param[0], param[1], relations);
+                          })), (function (a, b) {
+                        return Belt_List.length(a) - Belt_List.length(b) | 0;
+                      }))), (function (path) {
+                return Belt_List.length(path) / 2 | 0;
+              }));
+}
+
 exports.network = network;
 exports.path = path;
-exports.nodesInShortesPath = nodesInShortesPath;
+exports.nodesInPath = nodesInPath;
 exports.closure = closure;
+exports.shortestPathLength = shortestPathLength;
 /* Repromise Not a pure module */

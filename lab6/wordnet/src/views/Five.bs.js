@@ -10,7 +10,10 @@ var Belt_List = require("bs-platform/lib/js/belt_List.js");
 var Repromise = require("@aantron/repromise/src/js/repromise.js");
 var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
 var Belt_MapInt = require("bs-platform/lib/js/belt_MapInt.js");
+var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
 var Belt_SetInt = require("bs-platform/lib/js/belt_SetInt.js");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
+var LCH$Wordnet = require("../infrastructure/LCH.bs.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
 var Util$Wordnet = require("../infrastructure/Util.bs.js");
 var Graph$Wordnet = require("../infrastructure/Graph.bs.js");
@@ -63,13 +66,13 @@ var distanceBlock = Css.style(/* :: */[
         /* :: */[
           Css.display(/* flex */-1010954439),
           /* :: */[
-            Css.justifyContent(/* center */98248149),
+            Css.alignItems(/* center */98248149),
             /* :: */[
-              Css.alignItems(/* center */98248149),
+              Css.marginLeft(Css.rem(0)),
               /* :: */[
-                Css.marginLeft(Css.rem(0)),
+                Css.marginRight(/* auto */-1065951377),
                 /* :: */[
-                  Css.marginRight(/* auto */-1065951377),
+                  Css.paddingLeft(Css.rem(2)),
                   /* [] */0
                 ]
               ]
@@ -132,6 +135,7 @@ var initialState = /* record */[
   /* synsetMap */Belt_MapInt.empty,
   /* leftIndex */0,
   /* rightIndex */1,
+  /* distance */undefined,
   /* ready */false
 ];
 
@@ -142,6 +146,10 @@ var words = /* array */[
   ],
   /* record */[
     /* lemma */"wypadek",
+    /* senseNumber */1
+  ],
+  /* record */[
+    /* lemma */"kolizja",
     /* senseNumber */1
   ],
   /* record */[
@@ -194,7 +202,10 @@ function loadRelations(leftIndex, rightIndex, send) {
                                                   relations
                                                 ];
                                         }), Repromise.Rejectable[/* all */8](Belt_List.map(Belt_SetInt.toList(Belt_SetInt.fromArray(Belt_List.toArray(synsetIds))), (function (synsetId) {
-                                                  return Relations$Wordnet.network(synsetId, 2, /* () */0);
+                                                  return Relations$Wordnet.network(synsetId, 2, Caml_option.some(Belt_SetInt.fromArray(/* array */[
+                                                                      10,
+                                                                      11
+                                                                    ])), /* () */0);
                                                 }))));
                           }), Repromise.Rejectable[/* all */8](Belt_List.map(/* :: */[
                                   Belt_Array.getExn(words, leftIndex),
@@ -234,7 +245,12 @@ function make(param) {
           /* shouldUpdate */component[/* shouldUpdate */8],
           /* render */(function (self) {
               var description = ReasonReact.element(undefined, undefined, TaskDescription$Wordnet.make(ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Display as a directed graph semantic relations between the groups of lexemes."])), /* array */[]));
-              var distanceBlock$1 = ReasonReact.element(undefined, undefined, MaterialUi_Paper.make(distanceBlock, undefined, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Leacock Chodorow: 1.704123"]))]));
+              var match = self[/* state */1][/* distance */5];
+              var distanceBlock$1 = ReasonReact.element(undefined, undefined, MaterialUi_Paper.make(distanceBlock, undefined, undefined, undefined, undefined, undefined, /* array */[ReasonReact.element(undefined, undefined, MaterialUi_Typography.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */["Leacock Chodorow: " + (
+                                    match !== undefined ? (function (param) {
+                                            return param.toFixed(5);
+                                          })(match) : "?"
+                                  )]))]));
               var chooseWord = function (index, onChange) {
                 return React.createElement("div", {
                             className: setPickerContainer
@@ -299,7 +315,7 @@ function make(param) {
                                         return Curry._1(self[/* send */3], /* RightWordChosen */Block.__(2, [wordIndex]));
                                       })))), React.createElement("div", {
                               className: graphContainer
-                            }, self[/* state */1][/* ready */5] ? graph : React.createElement("div", {
+                            }, self[/* state */1][/* ready */6] ? graph : React.createElement("div", {
                                     className: progressContainer
                                   }, ReasonReact.element(undefined, undefined, MaterialUi_CircularProgress.make(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[])))));
             }),
@@ -310,12 +326,18 @@ function make(param) {
           /* reducer */(function (action, state) {
               switch (action.tag | 0) {
                 case 0 : 
+                    var relations = action[1];
+                    var synsetIds = action[0];
+                    var distance = Belt_Option.map(Relations$Wordnet.shortestPathLength(synsetIds, relations), (function (shortestPath) {
+                            return LCH$Wordnet.calculate(shortestPath, undefined, /* () */0);
+                          }));
                     return /* Update */Block.__(0, [/* record */[
-                                /* relations */action[1],
-                                /* synsetIds */action[0],
+                                /* relations */relations,
+                                /* synsetIds */synsetIds,
                                 /* synsetMap */action[2],
                                 /* leftIndex */state[/* leftIndex */3],
                                 /* rightIndex */state[/* rightIndex */4],
+                                /* distance */distance,
                                 /* ready */true
                               ]]);
                 case 1 : 
@@ -327,6 +349,7 @@ function make(param) {
                                 /* synsetMap */state[/* synsetMap */2],
                                 /* leftIndex */leftIndex,
                                 /* rightIndex */state[/* rightIndex */4],
+                                /* distance */state[/* distance */5],
                                 /* ready */false
                               ],
                               (function (self) {
@@ -342,6 +365,7 @@ function make(param) {
                                 /* synsetMap */state[/* synsetMap */2],
                                 /* leftIndex */state[/* leftIndex */3],
                                 /* rightIndex */rightIndex,
+                                /* distance */state[/* distance */5],
                                 /* ready */false
                               ],
                               (function (self) {

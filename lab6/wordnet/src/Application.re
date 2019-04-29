@@ -9,7 +9,7 @@ type action =
 
 type state = {route: Router.route};
 
-let initialState: state = {route: Five};
+let initialState: state = {route: One};
 
 let component = ReasonReact.reducerComponent(__MODULE__);
 

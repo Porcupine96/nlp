@@ -29,6 +29,7 @@ type options = {
     "shadow": bool,
     "smooth": {. "type": string},
   },
+  "interaction": {. "hideEdgesOnDrag": bool},
 };
 
 type props = {

@@ -192,6 +192,9 @@ function make(param) {
                   smooth: {
                     type: "continuous"
                   }
+                },
+                interaction: {
+                  hideEdgesOnDrag: true
                 }
               };
               var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, options, /* array */[]));

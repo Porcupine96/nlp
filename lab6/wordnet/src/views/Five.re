@@ -59,6 +59,10 @@ let words = [|
   {lemma: {j|kolizja|j}, senseNumber: 2},
   {lemma: {j|nieszczęście|j}, senseNumber: 2},
   {lemma: {j|katastrofa budowlana|j}, senseNumber: 1},
+  {lemma: {j|coś|j}, senseNumber: 1},
+  {lemma: {j|rzecz|j}, senseNumber: 1},
+  {lemma: {j|obiekt|j}, senseNumber: 1},
+  {lemma: {j|nic|j}, senseNumber: 1},
 |];
 
 let loadRelations = (~leftIndex: int, ~rightIndex: int, send: action => unit) =>
@@ -80,6 +84,7 @@ let loadRelations = (~leftIndex: int, ~rightIndex: int, send: action => unit) =>
          ->List.map(synsetId =>
              synsetId |> (synsetId => Relations.network(synsetId, ~maxDepth=Some(2), ~relKinds=[|10, 11|]->Belt_SetInt.fromArray, ()))
            ),
+         //  => synsetId |> (synsetId => Relations.network(synsetId, ~maxDepth=Some(2), ()))),
        )
        |> map((relations: list(list(Domain.relation))) => (synsetIds, relations))
      )
@@ -156,7 +161,9 @@ let make = _ => {
           {words
            ->Array.zip(Array.range(0, Array.length(words)))
            ->Array.map(((word, index)) =>
-               <M.MenuItem value={`Int(index)}> {ReasonReact.string(word.lemma ++ " (" ++ string_of_int(word.senseNumber) ++ ")")} </M.MenuItem>
+               <M.MenuItem key={string_of_int(index)} value={`Int(index)}>
+                 {ReasonReact.string(word.lemma ++ " (" ++ string_of_int(word.senseNumber) ++ ")")}
+               </M.MenuItem>
              )}
         </M.Select>
       </div>;
@@ -192,6 +199,9 @@ let make = _ => {
         "smooth": {
           "type": "dynamic",
         },
+      },
+      "interaction": {
+        "hideEdgesOnDrag": true,
       },
     };
 

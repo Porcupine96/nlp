@@ -91,6 +91,9 @@ let make = _ => {
           "type": "continuous",
         },
       },
+      "interaction": {
+        "hideEdgesOnDrag": true,
+      },
     };
 
     let graph = <Graph nodes edges options />;

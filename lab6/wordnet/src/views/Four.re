@@ -164,6 +164,9 @@ let make = _ => {
           "type": "dynamic",
         },
       },
+      "interaction": {
+        "hideEdgesOnDrag": true,
+      },
     };
 
     let graph = <Graph nodes edges options />;

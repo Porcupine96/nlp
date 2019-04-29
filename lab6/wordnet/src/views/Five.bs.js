@@ -163,6 +163,22 @@ var words = /* array */[
   /* record */[
     /* lemma */"katastrofa budowlana",
     /* senseNumber */1
+  ],
+  /* record */[
+    /* lemma */"coś",
+    /* senseNumber */1
+  ],
+  /* record */[
+    /* lemma */"rzecz",
+    /* senseNumber */1
+  ],
+  /* record */[
+    /* lemma */"obiekt",
+    /* senseNumber */1
+  ],
+  /* record */[
+    /* lemma */"nic",
+    /* senseNumber */1
   ]
 ];
 
@@ -260,10 +276,11 @@ function make(param) {
                                     3654863,
                                     index
                                   ], undefined, undefined, undefined, setPicker, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[Belt_Array.map(Belt_Array.zip(words, Belt_Array.range(0, words.length)), (function (param) {
+                                            var index = param[1];
                                             var word = param[0];
-                                            return ReasonReact.element(undefined, undefined, MaterialUi_MenuItem.make(undefined, undefined, undefined, undefined, undefined, /* `Int */[
+                                            return ReasonReact.element(String(index), undefined, MaterialUi_MenuItem.make(undefined, undefined, undefined, undefined, undefined, /* `Int */[
                                                             3654863,
-                                                            param[1]
+                                                            index
                                                           ], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, /* array */[word[/* lemma */0] + (" (" + (String(word[/* senseNumber */1]) + ")"))]));
                                           }))])));
               };
@@ -302,6 +319,9 @@ function make(param) {
                   smooth: {
                     type: "dynamic"
                   }
+                },
+                interaction: {
+                  hideEdgesOnDrag: true
                 }
               };
               var graph = ReasonReact.element(undefined, undefined, Graph$Wordnet.make(nodes, edges, options, /* array */[]));

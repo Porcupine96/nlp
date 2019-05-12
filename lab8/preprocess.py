@@ -1,17 +1,6 @@
-import os
 import pandas as pd
 
 from regex import regex
-
-
-def read_bills(data_path):
-    bills = {}
-    for file_name in os.listdir(data_path):
-        path = os.path.join(data_path, file_name)
-        with open(path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-            bills[file_name] = '\n'.join(lines)
-    return bills
 
 
 def preprocess_bill(bill_path, bill_content):
@@ -38,3 +27,36 @@ def preprocess_all(bills):
     return pd.DataFrame(
         results[:949] + results[951:],
         columns=['bill_file', 'text', 'is_amendment'])
+
+
+def custom_tokenize(text):
+    tokens = []
+    words = text.split()
+
+    for word in words:
+        w = word.lower()
+        if w.isalpha() \
+           or w.startswith('art') or w.startswith('"art') \
+           or w.startswith('ust') or w.startswith('"ust'):
+            tokens.append(w)
+    return tokens
+
+
+def extract_tokens(text):
+    normalized_tokens = []
+    tokens = custom_tokenize(text)
+    tokens_length = len(tokens)
+
+    for i in range(tokens_length):
+        normalized = tokens[i]
+
+        if len(normalized) > 0:
+            if 0 < i < tokens_length - 1 \
+               and tokens[i - 1] == '``' \
+               and tokens[i + 1] == "''" \
+               and tokens[i].starswith('art'):
+                normalized_tokens.append('"' + normalized + '""')
+            else:
+                normalized_tokens.append(normalized)
+
+    return normalized_tokens

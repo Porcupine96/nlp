@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from regex import regex
+# from regex import regex
 from collections import Counter
 
 from preprocess import extract_tokens
@@ -50,3 +50,7 @@ def build_vocabulary(df, drop_threshold, drop_exceptions):
         if count > drop_threshold or token in drop_exceptions:
             vocabulary.append(token)
     return vocabulary
+
+
+def f1_score(precision, recall):
+    return 2 * (precision * recall) / (precision + recall)

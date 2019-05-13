@@ -1,6 +1,7 @@
 import pandas as pd
 
-from regex import regex
+# from regex import regex
+import regex
 
 
 def preprocess_bill(bill_path, bill_content):

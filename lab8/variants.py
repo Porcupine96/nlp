@@ -36,13 +36,13 @@ def take_percent(text, pct):
     lines = get_lines(text)
     shuffle(lines)
     line_pct = ceil(pct * len(lines) / 100)
-    return lines[:line_pct]
+    return '\n'.join(lines[:line_pct])
 
 
 def take_lines(text, count):
     lines = get_lines(text)
     shuffle(lines)
-    return lines[:count]
+    return '\n'.join(lines[:count])
 
 
 def get_lines(text):

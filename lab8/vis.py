@@ -15,10 +15,10 @@ def plot_score(metric, metrics, kernel, ax=None):
 def plot_metrics_for(metric,
                      metrics,
                      kernels=['linear', 'poly', 'sigmoid', 'rbf']):
-    fig, axes = plt.subplots(ncols=4, sharey=True)
-    fig.set_size_inches((18, 4))
+    fig, axes = plt.subplots(ncols=len(kernels), sharey=True)
+    fig.set_size_inches((4.5 * len(kernels), 4))
 
-    for kernel, ax in zip(kernels, axes):
+    for kernel, ax in zip(kernels, [axes]):
         plot_score(metric, metrics, kernel, ax)
         ax.set_title(kernel)
 

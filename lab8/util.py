@@ -1,11 +1,10 @@
 import os
 import numpy as np
+import regex
 import pandas as pd
 
-# from regex import regex
-from collections import Counter
-
 from preprocess import extract_tokens
+from collections import Counter
 
 
 def read_bills(data_path):

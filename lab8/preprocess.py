@@ -1,6 +1,5 @@
 import pandas as pd
 
-# from regex import regex
 import regex
 
 
@@ -24,10 +23,7 @@ def preprocess_all(bills):
     results = []
     for bill_path, bill_content in bills.items():
         results.append(preprocess_bill(bill_path, bill_content))
-    # TODO: fix remaining
-    return pd.DataFrame(
-        results[:949] + results[951:],
-        columns=['bill_file', 'text', 'is_amendment'])
+    return pd.DataFrame(results, columns=['bill_file', 'text', 'is_amendment'])
 
 
 def custom_tokenize(text):

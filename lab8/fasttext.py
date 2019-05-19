@@ -21,19 +21,29 @@ def prepare_files(df, path):
             f.write(csv_row(row))
 
 
-def teach_fasttext(train_path, validation_path):
+def evaluate(model, test):
+    _, _, f1, _ = precision_recall_fscore_support(
+        test['is_amendment'],
+        fasttext_predict(model, test),
+        average='weighted')
+    return f1
+
+
+def teach_fasttext(train_path, validation):
     best_score = None
     best_classifier = None
     metrics = []
 
-    for lr in [i / 10 for i in range(1, 40, 5)]:
+    for lr in [i / 10 for i in range(1, 50, 5)]:
         for wordNgrams in [1, 2, 3]:
             model = fastText.train_supervised(
                 train_path, lr=lr, wordNgrams=wordNgrams)
 
             # TODO: instead of model.test use the method from sklearn
-            (_, precision, recall) = model.test(validation_path)
-            score = f1_score(precision, recall)
+            # (_, precision, recall) = model.test(validation_path)
+            # score = f1_score(precision, recall)
+
+            score = evaluate(model, validation)
 
             if best_score is None or score > best_score:
                 best_score = score

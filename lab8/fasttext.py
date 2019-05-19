@@ -39,10 +39,6 @@ def teach_fasttext(train_path, validation):
             model = fastText.train_supervised(
                 train_path, lr=lr, wordNgrams=wordNgrams)
 
-            # TODO: instead of model.test use the method from sklearn
-            # (_, precision, recall) = model.test(validation_path)
-            # score = f1_score(precision, recall)
-
             score = evaluate(model, validation)
 
             if best_score is None or score > best_score:

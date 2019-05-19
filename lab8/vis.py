@@ -12,14 +12,15 @@ def plot_score(metric, metrics, kernel, ax=None):
             .plot(x=metric, y='score', logx=True, legend=False, ax=ax)
 
 
-def plot_metrics_for(metric,
-                     metrics,
-                     kernels=['linear', 'poly', 'sigmoid', 'rbf']):
-    fig, axes = plt.subplots(ncols=len(kernels), sharey=True)
-    fig.set_size_inches((4.5 * len(kernels), 4))
+def plot_metrics_for(metrics):
+    ncols = 3
+    fig, axes = plt.subplots(ncols=ncols)
+    fig.set_size_inches((4.5 * ncols, 4))
 
-    for kernel, ax in zip(kernels, [axes]):
-        plot_score(metric, metrics, kernel, ax)
-        ax.set_title(kernel)
+    ms = ['C', 'tol', 'drop_threshold']
+
+    for m, ax in zip(ms, axes):
+        plot_score(m, metrics, 'rbf', ax)
+        ax.set_title(m)
 
     plt.show()

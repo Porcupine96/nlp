@@ -5,11 +5,10 @@ from main import read_bills
 
 
 class Entity:
-    def __init__(self, orth, lex, ner, ner_nr):
+    def __init__(self, orth, lex, ner):
         self.orth = orth
         self.lex = lex
         self.ner = ner
-        self.ner_nr = ner_nr
 
         if ner is None:
             self.coarse_ner = None
@@ -26,19 +25,55 @@ def extract_entities(content):
 
     for chunk in root:
         for sentence in chunk:
+            last_ner_nr = 0
+            last_ann = None
+            orth_in_progress = None
+            lex_in_progress = None
             for tok in sentence:
                 if tok.tag == 'tok':
                     orth = tok.find('orth').text
                     lex = tok.find('lex/base').text
-                    ner, ner_nr = (None, None)
+                    ner = None
 
                     ann = tok.find('ann')
                     if ann is not None:
                         ner = ann.attrib['chan']
                         ner_nr = ann.text
 
-                    entities.append(Entity(orth, lex, ner, ner_nr))
+                        # no chain
+                        if last_ann is None and str(ner_nr) == '0':
+                            pass
 
+                        # no chain - start a new chain
+                        elif last_ann is None:
+                            orth_in_progress = orth
+                            lex_in_progress = lex
+                            last_ann = ann
+                        # in the middle of a chain - finish the chain
+                        elif str(ner_nr) == '0' or last_ann.attrib[
+                                'chan'] != ann.attrib['chan']:
+                            entities.append(
+                                Entity(orth_in_progress, lex_in_progress,
+                                       last_ann.attrib['chan']))
+                            orth_in_progress = None
+                            lex_in_progress = None
+                            last_ann = None
+                        # in the middle of a chain - continue
+                        else:
+                            orth_in_progress += ' {}'.format(orth)
+                            lex_in_progress += ' {}'.format(lex)
+                            last_ann = ann
+                    # no chain - current token without ann
+                    elif last_ann is None:
+                        pass
+                    # in the middle of a chain - current token without ann
+                    else:
+                        entities.append(
+                            Entity(orth_in_progress, lex_in_progress,
+                                   last_ner))
+                        orth_in_progress = None
+                        lex_in_progress = None
+                        last_ann = None
     return entities
 
 
@@ -47,8 +82,7 @@ def entities_dataframe(tagged_bills):
     for name, content in tagged_bills.items():
         for entity in extract_entities(content):
             results.append((name, entity.orth, entity.lex, entity.ner,
-                            entity.coarse_ner, entity.ner_nr))
+                            entity.coarse_ner))
 
     return pd.DataFrame(
-        results,
-        columns=['bill_path', 'orth', 'lex', 'ner', 'coarse_ner', 'ner_nr'])
+        results, columns=['bill_path', 'orth', 'lex', 'ner', 'coarse_ner'])

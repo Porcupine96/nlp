@@ -11,10 +11,9 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "bs-platform": "^5.0.0"
+    "bs-platform": "^7.0.1"
   },
   "dependencies": {
-    "@aantron/repromise": "^0.6.0",
     "@glennsl/bs-json": "^3.0.0",
     "@jsiebern/bs-material-ui": "^1.1.1",
     "@material-ui/core": "^3.9.3",
@@ -26,6 +25,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-graph-vis": "^1.0.2",
+    "reason-promise": "^1.0.2",
     "reason-react": "^0.7.0"
   }
 }

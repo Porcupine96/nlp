@@ -1,5 +1,5 @@
 open Belt;
-open Repromise.Rejectable;
+open Promise.Js;
 
 module Styles = {
   open Css;
@@ -31,26 +31,26 @@ let initialState = {relations: [], synsetMap: Belt_MapInt.empty, depth: 1, ready
 let loadRelations = (~depth: int, send: action => unit) => {
   Domain.(
     Wordnet.searchSenses("wypadek")
-    |> map((senses) => (senses->List.keep(sense => sense.lemma == "wypadek" && sense.senseNumber == 1): list(Domain.sense)))
-    |> map(senses => senses->List.headExn)
-    |> andThen((sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))
-    |> andThen(synsetId => Relations.path(synsetId, Domain.Hyponym, ~maxLength=Some(depth), ()))
-    |> andThen((relations: list(Domain.relation)) =>
-         Repromise.Rejectable.all(
+    ->map((senses) => (senses->List.keep(sense => sense.lemma == "wypadek" && sense.senseNumber == 1): list(Domain.sense)))
+    ->map(senses => senses->List.headExn)
+    ->flatMap((sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))
+    ->flatMap(synsetId => Relations.path(synsetId, Domain.Hyponym, ~maxLength=Some(depth), ()))
+    ->flatMap((relations: list(Domain.relation)) =>
+         Promise.Js.all(
            relations
            ->Domain.distinctSynsets
            ->List.map(synsetId =>
                synsetId->Wordnet.sensesForSynset
-               |> map(senses => {
+               ->map(senses => {
                     let synset: Domain.synset = {synsetId, senses};
                     (synsetId, synset);
                   })
              ),
          )
-         |> map(synsets => synsets->List.toArray->Belt_MapInt.fromArray)
-         |> map(synsetMap => RelationsLoaded(relations, synsetMap))
+         ->map(synsets => synsets->List.toArray->Belt_MapInt.fromArray)
+         ->map(synsetMap => RelationsLoaded(relations, synsetMap))
        )
-    |> wait(send)
+    ->get(send)
   );
 };
 

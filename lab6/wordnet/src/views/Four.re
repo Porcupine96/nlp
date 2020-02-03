@@ -1,5 +1,5 @@
 open Belt;
-open Repromise.Rejectable;
+open Promise.Js;
 
 module Styles = {
   open Css;
@@ -68,12 +68,12 @@ let loadRelations = (~setIndex: int, send: action => unit) =>
     setForIndex(setIndex)
     ->List.map(sense =>
         Wordnet.searchSenses(sense.lemma)
-        |> map((senses: list(Domain.sense)) => senses->List.keep(s => s.lemma == sense.lemma && s.senseNumber == sense.senseNumber))
-        |> map(senses => senses->List.headExn)
-        |> andThen((sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))
+        ->map((senses: list(Domain.sense)) => senses->List.keep(s => s.lemma == sense.lemma && s.senseNumber == sense.senseNumber))
+        ->map(senses => senses->List.headExn)
+        ->flatMap((sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))
       ),
   )
-  |> andThen(synsetIds =>
+  ->flatMap(synsetIds =>
        all(
          synsetIds
          ->List.toArray
@@ -81,29 +81,29 @@ let loadRelations = (~setIndex: int, send: action => unit) =>
          ->Belt_SetInt.toList
          ->List.map(synsetId => synsetId |> (synsetId => Relations.network(synsetId, ~maxDepth=Some(2), ()))),
        )
-       |> map((relations: list(list(Domain.relation))) => (synsetIds, relations))
+       ->map((relations: list(list(Domain.relation))) => (synsetIds, relations))
      )
-  |> map(((synsetIds, relations)) =>
+  ->map(((synsetIds, relations)) =>
        (synsetIds, relations->List.flatten->List.toArray->Belt_Set.fromArray(~id=(module Domain.RelationCmp))->Belt_Set.toList)
      )
-  |> andThen(((synsetIds, relations)) => {
+  ->flatMap(((synsetIds, relations)) => {
        let distinctSynsetIds = synsetIds->List.toArray->Belt_SetInt.fromArray->Belt_SetInt.toList;
 
-       Repromise.Rejectable.all(
+       Promise.Js.all(
          relations
          ->Domain.distinctSynsets
          ->List.map(synsetId =>
              synsetId->Wordnet.sensesForSynset
-             |> map(senses => {
+             ->map(senses => {
                   let synset: Domain.synset = {synsetId, senses};
                   (synsetId, synset);
                 })
            ),
        )
-       |> map(synsets => synsets->List.toArray->Belt_MapInt.fromArray)
-       |> map(synsetMap => RelationsLoaded(distinctSynsetIds, relations, synsetMap));
+       ->map(synsets => synsets->List.toArray->Belt_MapInt.fromArray)
+       ->map(synsetMap => RelationsLoaded(distinctSynsetIds, relations, synsetMap));
      })
-  |> wait(send);
+  ->get(send);
 
 let component = ReasonReact.reducerComponent(__MODULE__);
 

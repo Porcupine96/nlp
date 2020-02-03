@@ -1,5 +1,5 @@
 open Belt;
-open Repromise.Rejectable;
+open Promise.Js;
 
 module Styles = {
   open Css;
@@ -21,12 +21,12 @@ type state = {
 
 let loadSynsets = (send: action => unit) =>
   Wordnet.searchSenses("szkoda")
-  |> andThen(senses => Repromise.Rejectable.all(List.map(senses, (sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))))
-  |> andThen(synsetIds =>
-       Repromise.Rejectable.all(synsetIds->List.map(synsetId => Wordnet.sensesForSynset(synsetId) |> map(senses => Domain.{synsetId, senses})))
+  ->flatMap(senses => Promise.Js.all(List.map(senses, (sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))))
+  ->flatMap(synsetIds =>
+       Promise.Js.all(synsetIds->List.map(synsetId => Wordnet.sensesForSynset(synsetId)->map(senses => Domain.{synsetId, senses})))
      )
-  |> map(synsets => SynsetsLoaded(synsets))
-  |> wait(send);
+  ->map(synsets => SynsetsLoaded(synsets))
+  ->get(send);
 
 let initialState = {synsets: [], ready: false};
 

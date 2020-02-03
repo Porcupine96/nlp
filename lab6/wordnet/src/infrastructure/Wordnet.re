@@ -1,8 +1,8 @@
 [%raw "require('isomorphic-fetch')"];
 
-open Repromise.Rejectable;
+open Promise.Js;
 
-type jsRepromise('a) = Repromise.Rejectable.t('a, Js.Promise.error);
+type jsPromise('a) = Promise.Js.t('a, Js.Promise.error);
 
 type lexem = {
   .
@@ -44,10 +44,10 @@ let relationDecoder: Json.Decode.decoder(Domain.relation) =
       relationName: json |> field("relation", json => json |> field("name", string)),
     };
 
-let searchSenses: string => jsRepromise(list(Domain.sense)) = {
+let searchSenses: string => jsPromise(list(Domain.sense)) = {
   let decode: Json.Decode.decoder(senseSearchResponse) = json => Json.Decode.{senses: json |> field("content", list(senseDecoder))};
 
-  word =>
+  word => {
     Js.Promise.(
       Fetch.fetch(apiUrl ++ "/senses/search?lemma=" ++ word)
       |> then_(Fetch.Response.json)
@@ -57,21 +57,22 @@ let searchSenses: string => jsRepromise(list(Domain.sense)) = {
       //      Js.log(json);
       //      json |> decode |> resolve;
       //    })
-      |> fromJsPromise
-      |> map(res => res.senses)
-    );
+    )
+    ->fromBsPromise
+    ->map(res => res.senses)
+  };
 };
 
-let synsetForSenseId: int => jsRepromise(int) =
+let synsetForSenseId: int => jsPromise(int) =
   senseId =>
     Js.Promise.(
       Fetch.fetch(apiUrl ++ "/senses/" ++ string_of_int(senseId) ++ "/synset")
       |> then_(Fetch.Response.json)
       |> then_(json => json |> synsetDecoder |> resolve)
-      |> fromJsPromise
+      |> fromBsPromise
     );
 
-let sensesForSynset: int => jsRepromise(list(Domain.sense)) = {
+let sensesForSynset: int => jsPromise(list(Domain.sense)) = {
   let decode = Json.Decode.list(senseDecoder);
 
   synsetId =>
@@ -79,11 +80,11 @@ let sensesForSynset: int => jsRepromise(list(Domain.sense)) = {
       Fetch.fetch(apiUrl ++ "/synsets/" ++ string_of_int(synsetId) ++ "/senses")
       |> then_(Fetch.Response.json)
       |> then_(json => json |> decode |> resolve)
-      |> fromJsPromise
+      |> fromBsPromise
     );
 };
 
-let relationsForSynset: int => jsRepromise(list(Domain.relation)) = {
+let relationsForSynset: int => jsPromise(list(Domain.relation)) = {
   let decode = Json.Decode.list(relationDecoder);
 
   synsetId =>
@@ -95,6 +96,6 @@ let relationsForSynset: int => jsRepromise(list(Domain.relation)) = {
       //      Js.log(json);
       //      json |> decode |> resolve;
       //    })
-      |> fromJsPromise
+      |> fromBsPromise
     );
 };

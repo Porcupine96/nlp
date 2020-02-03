@@ -15,7 +15,7 @@
         "reason-react",
         "bs-css",
         "bs-fetch",
-        "@aantron/repromise",
+        "reason-promise",
         "@glennsl/bs-json",
         "@jsiebern/bs-material-ui",
         "@mscharley/bs-material-ui-icons"

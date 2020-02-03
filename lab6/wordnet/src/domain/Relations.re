@@ -1,8 +1,8 @@
 open Belt;
-open Repromise.Rejectable;
+open Promise.Js;
 
 let network =
-    (synsetId: int, ~maxDepth: option(int)=Some(1), ~relKinds: option(Belt_SetInt.t)=?, ()): Wordnet.jsRepromise(list(Domain.relation)) => {
+    (synsetId: int, ~maxDepth: option(int)=Some(1), ~relKinds: option(Belt_SetInt.t)=?, ()): Wordnet.jsPromise(list(Domain.relation)) => {
   let visited = ref(Belt_SetInt.empty);
   let relationIds = ref(Belt_SetInt.empty);
 
@@ -11,7 +11,7 @@ let network =
     | Some(0) => resolved([])
     | _ =>
       Wordnet.relationsForSynset(synsetId)
-      |> andThen((relations: list(Domain.relation)) => {
+      ->flatMap((relations: list(Domain.relation)) => {
            let allowedRelations =
              relKinds
              ->Option.map(allowed => relations->List.keep(relation => allowed->Belt_SetInt.has(Domain.(relation.relationId))))
@@ -20,43 +20,43 @@ let network =
            let newRelations = allowedRelations->List.keep(relation => !(relationIds^)->Belt_SetInt.has(relation.id));
            newRelations->List.forEach(relation => relationIds := (relationIds^)->Belt_SetInt.add(relation.id));
 
-           Repromise.Rejectable.all(
+           Promise.Js.all(
              newRelations->List.map(relation =>
                switch (relation.relFrom, relation.relTo) {
                | (relFrom, relTo) when relFrom == synsetId && !(visited^)->Belt_SetInt.has(relTo) =>
                  visited := (visited^)->Belt_SetInt.add(relTo);
-                 _network(relTo, ~maxDepth=maxDepth->Option.map(d => d - 1), ()) |> map(result => List.concat(newRelations, result));
+                 _network(relTo, ~maxDepth=maxDepth->Option.map(d => d - 1), ())->map(result => List.concat(newRelations, result));
                | (relFrom, relTo) when relTo == synsetId && !(visited^)->Belt_SetInt.has(relFrom) =>
                  visited := (visited^)->Belt_SetInt.add(relFrom);
-                 _network(relFrom, ~maxDepth=maxDepth->Option.map(d => d - 1), ()) |> map(result => List.concat(newRelations, result));
+                 _network(relFrom, ~maxDepth=maxDepth->Option.map(d => d - 1), ())->map(result => List.concat(newRelations, result));
                | _ => resolved([])
                }
              ),
            );
          })
-      |> map(relations => relations->List.flatten)
+      ->map(relations => relations->List.flatten)
     };
 
   _network(synsetId, ~maxDepth, ());
 };
 
-let rec path = (synsetId: int, relationKind: Domain.relationKind, ~maxLength: option(int)=None, ()): Wordnet.jsRepromise(list(Domain.relation)) =>
+let rec path = (synsetId: int, relationKind: Domain.relationKind, ~maxLength: option(int)=None, ()): Wordnet.jsPromise(list(Domain.relation)) =>
   switch (maxLength) {
   | Some(0) => resolved([])
   | _ =>
     Wordnet.relationsForSynset(synsetId)
-    |> andThen((relations: list(Domain.relation)) => {
+    ->flatMap((relations: list(Domain.relation)) => {
          let filteredRelations =
            relations->List.keep(relation => relation.relationKind == relationKind)->List.keep(relation => relation.relTo == synsetId);
 
-         Repromise.Rejectable.all(
+         Promise.Js.all(
            filteredRelations->List.map(relation =>
              path(relation.relFrom, relationKind, ~maxLength=maxLength->Option.map(d => d - 1), ())
-             |> map(result => List.concat(filteredRelations, result))
+             ->map(result => List.concat(filteredRelations, result))
            ),
          );
        })
-    |> map(relations => relations->List.flatten)
+    ->map(relations => relations->List.flatten)
   };
 
 let nodesInPath = (a: int, b: int, relations: list(Domain.relation)) => {

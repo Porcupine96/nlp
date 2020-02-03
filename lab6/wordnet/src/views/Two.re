@@ -1,5 +1,5 @@
 open Belt;
-open Repromise.Rejectable;
+open Promise.Js;
 
 module Styles = {
   open Css;
@@ -22,27 +22,27 @@ let initialState = {relations: [], synsetMap: Belt_MapInt.empty, ready: false};
 
 let loadRelations = (send: action => unit) =>
   Wordnet.searchSenses("wypadek drogowy")
-  |> andThen(senses => Repromise.Rejectable.all(List.map(senses, (sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))))
-  |> andThen(synsetIds => {
+  ->flatMap(senses => Promise.Js.all(List.map(senses, (sense: Domain.sense) => Wordnet.synsetForSenseId(sense.id))))
+  ->flatMap(synsetIds => {
        let synsetId = synsetIds->List.headExn;
        Relations.path(synsetId, Domain.Hypernymy, ());
      })
-  |> andThen((relations: list(Domain.relation)) =>
-       Repromise.Rejectable.all(
+  ->flatMap((relations: list(Domain.relation)) =>
+       Promise.Js.all(
          relations
          ->Domain.distinctSynsets
          ->List.map(synsetId =>
              synsetId->Wordnet.sensesForSynset
-             |> map(senses => {
+             ->map(senses => {
                   let synset: Domain.synset = {synsetId, senses};
                   (synsetId, synset);
                 })
            ),
        )
-       |> map(synsets => synsets->List.toArray->Belt_MapInt.fromArray)
-       |> map(synsetMap => RelationsLoaded(relations, synsetMap))
+       ->map(synsets => synsets->List.toArray->Belt_MapInt.fromArray)
+       ->map(synsetMap => RelationsLoaded(relations, synsetMap))
      )
-  |> wait(send);
+  ->get(send);
 
 let component = ReasonReact.reducerComponent(__MODULE__);
 
